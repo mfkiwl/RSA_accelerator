@@ -1,5 +1,5 @@
-#ifndef _VGA_LED_H
-#define _VGA_LED_H
+#ifndef _RSA_BOX_H
+#define _RSA_BOX_H
 
 #include <linux/ioctl.h>
 
@@ -8,12 +8,12 @@
 typedef struct {
   unsigned char address;    /* 0, 1, .. , VGA_LED_DIGITS - 1 */
   int coord; /* LSB is segment a, MSB is decimal point */
-} vga_led_arg_t;
+} rsa_box_arg_t;
 
-#define VGA_LED_MAGIC 'q'
+#define RSA_BOX_MAGIC 'q'
 
 /* ioctls and their arguments */
-#define VGA_LED_WRITE_DIGIT _IOW(VGA_LED_MAGIC, 1, vga_led_arg_t *)
-#define VGA_LED_READ_DIGIT  _IOWR(VGA_LED_MAGIC, 2, vga_led_arg_t *)
+#define RSA_BOX_WRITE_DIGIT _IOW(RSA_BOX_MAGIC, 1, rsa_box_arg_t *)
+#define RSA_BOX_READ_DIGIT  _IOWR(RSA_BOX_MAGIC, 2, rsa_box_arg_t *)
 
 #endif

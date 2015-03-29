@@ -34,7 +34,7 @@
 #include <linux/uaccess.h>
 #include "vga_led.h"
 
-#define DRIVER_NAME "vga_led"
+#define DRIVER_NAME "rsa_box"
 
 /*
  * Information about our device

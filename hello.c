@@ -57,7 +57,7 @@ void write_segment(int axis, int coord)
 int main()
 {
   vga_led_arg_t vla;
-  static const char filename[] = "/dev/vga_led";
+  static const char filename[] = "/dev/rsa_box"; // must match module name in rsa_box.c
 
   printf("VGA LED Userspace program started\n");
 

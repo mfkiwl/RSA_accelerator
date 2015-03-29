@@ -1,7 +1,7 @@
 ifneq (${KERNELRELEASE},)
 
 # KERNELRELEASE defined: we are being compiled as part of the Kernel
-        obj-m := vga_led.o
+        obj-m := rsa_box.o
 
 else
 
