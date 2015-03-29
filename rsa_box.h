@@ -3,7 +3,7 @@
 
 #include <linux/ioctl.h>
 
-#define COORDINATES 2
+#define REGISTERS 2
 
 typedef struct {
   unsigned char address;    /* 0, 1, .. , VGA_LED_DIGITS - 1 */

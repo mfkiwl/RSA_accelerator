@@ -6,8 +6,6 @@
  * Stephen A. Edwards
  * Columbia University
  *
- * Modified by: Emily Pakulski (enp2111)
- *
  * References:
  * Linux source: Documentation/driver-model/platform.txt
  *               drivers/misc/arm-charlcd.c
@@ -15,36 +13,38 @@
  * http://free-electrons.com/docs/
  *
  * "make" to build
- * insmod rsa_box.ko
+ * insmod vga_led.ko
  *
  * Check code style with
- * checkpatch.pl --file --no-tree rsa_box.c
+ * checkpatch.pl --file --no-tree vga_led.c
  */
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/errno.h>
 #include <linux/version.h>
-#include <linux/kernel.h>
+#include <linux/kernel.h> /* printk() */
 #include <linux/platform_device.h>
 #include <linux/miscdevice.h>
-#include <linux/slab.h>
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/io.h>
+#include <linux/errno.h> 	/* error codes */
+#include <linux/types.h> 	/* size_t */
 #include <linux/of.h>
 #include <linux/of_address.h>
-#include <linux/fs.h>	/* struct file_operations */
+#include <linux/fs.h>
 #include <linux/uaccess.h>
-#include "rsa_box.h"
+#include "vga_led.h"
 
-#define DRIVER_NAME "rsa_box"
+#define DRIVER_NAME "vga_led"
 
 /*
  * Information about our device
  */
 struct vga_led_dev {
-	struct resource res; 	/* Resource: our registers */
+	struct resource res; /* Resource: our registers */
 	void __iomem *virtbase; /* Where registers can be accessed in memory */
-	u8 segments[REGISTERS];
+	u8 segments[COORDINATES];
 } dev;
 
 /*
@@ -64,32 +64,31 @@ static void write_digit(int digit, u16 segments)
  */
 static long vga_led_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 {
-	rsa_box_arg_t vla;
+	vga_led_arg_t vla;
 
-	switch (cmd) 
-        {
-	    case RSA_BOX_WRITE_DIGIT:
-		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
-				   sizeof(rsa_box_arg_t)))
+	switch (cmd) {
+	case VGA_LED_WRITE_DIGIT:
+		if (copy_from_user(&vla, (vga_led_arg_t *) arg,
+				   sizeof(vga_led_arg_t)))
 			return -EACCES;
 		if (vla.address > 8)
 			return -EINVAL;
 		write_digit(vla.address, vla.coord);
 		break;
 
-	    case RSA_BOX_READ_DIGIT:
-		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
-				   sizeof(rsa_box_arg_t)))
+	case VGA_LED_READ_DIGIT:
+		if (copy_from_user(&vla, (vga_led_arg_t *) arg,
+				   sizeof(vga_led_arg_t)))
 			return -EACCES;
 		if (vla.address > 8)
 			return -EINVAL;
 		vla.coord = dev.segments[vla.address];
-		if (copy_to_user((rsa_box_arg_t *) arg, &vla,
-				 sizeof(rsa_box_arg_t)))
+		if (copy_to_user((vga_led_arg_t *) arg, &vla,
+				 sizeof(vga_led_arg_t)))
 			return -EACCES;
 		break;
 
-	    default:
+	default:
 		return -EINVAL;
 	}
 
@@ -97,15 +96,10 @@ static long vga_led_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 }
 
 /* The operations our device knows how to do */
-// www.tdlp.org/LDP/lkmpg/2.4/html/c577.htm  
 static const struct file_operations vga_led_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl = vga_led_ioctl,
 };
-// file_operations holds pointers to functions defined by the driver that performs
-// various operations on the device. 
-// Each field of the structure corresponds to the address of some function
-// defined by the driver to handle a requested operation.
 
 /* Information about our device for the "misc" framework -- like a char dev */
 static struct miscdevice vga_led_misc_device = {
@@ -120,9 +114,11 @@ static struct miscdevice vga_led_misc_device = {
  */
 static int __init vga_led_probe(struct platform_device *pdev)
 {
+	static unsigned char welcome_message[COORDINATES] = {
+		0x3E, 0x7D, 0x77, 0x08, 0x38, 0x79, 0x5E, 0x00};
 	int i, ret;
 
-	/* Register ourselves as a misc device: creates /dev/rsa_box */
+	/* Register ourselves as a misc device: creates /dev/vga_led */
 	ret = misc_register(&vga_led_misc_device);
 
 	/* Get the address of our registers from the device tree */
@@ -147,12 +143,8 @@ static int __init vga_led_probe(struct platform_device *pdev)
 	}
 
 	/* Display a welcome message */
-	/*
-	static unsigned char welcome_message[REGISTERS] = {
-		0x3E, 0x7D, 0x77, 0x08, 0x38, 0x79, 0x5E, 0x00};
-	for (i = 0; i < REGISTERS; i++)
+	for (i = 0; i < COORDINATES; i++)
 		write_digit(i, welcome_message[i]);
-	*/
 
 	return 0;
 
@@ -175,7 +167,7 @@ static int vga_led_remove(struct platform_device *pdev)
 /* Which "compatible" string(s) to search for in the Device Tree */
 #ifdef CONFIG_OF
 static const struct of_device_id vga_led_of_match[] = {
-	{ .compatible = "altr,rsa_box" },
+	{ .compatible = "altr,vga_led" },
 	{},
 };
 MODULE_DEVICE_TABLE(of, vga_led_of_match);
