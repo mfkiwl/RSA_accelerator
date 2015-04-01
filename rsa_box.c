@@ -42,19 +42,26 @@
  * Information about our device
  */
 struct vga_led_dev {
-	struct resource res; 	/* Resource: our registers */
+	struct resource res; /* Resource: our registers */
 	void __iomem *virtbase; /* Where registers can be accessed in memory */
-	u8 segments[REGISTERS];
 } dev;
 
 /*
  * Write segments of a single digit
  * Assumes digit is in range and the device information has been set up
  */
-static void write_digit(int digit, u16 segments)
-{
-	iowrite16(segments, dev.virtbase + digit * 2);
-	dev.segments[digit] = segments;
+static void write_digit(int digit, u32 segments)
+{ 
+	iowrite32(segments, dev.virtbase + digit * 2);
+        printk("write digit: %d\n", digit);
+}
+
+static u32 read_digit(int digit)
+{ 
+	u32 answer; 
+	answer = ioread32(dev.virtbase + digit * 2);
+        printk("read digit: %d\n", digit); 
+	return answer; 
 }
 
 /*
@@ -66,30 +73,29 @@ static long vga_led_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 {
 	rsa_box_arg_t vla;
 
-	switch (cmd) 
-        {
-	    case RSA_BOX_WRITE_DIGIT:
+	switch (cmd) {
+	case RSA_BOX_WRITE_DIGIT:
 		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
 				   sizeof(rsa_box_arg_t)))
 			return -EACCES;
-		if (vla.address > 8)
+		if (vla.digit > 8)
 			return -EINVAL;
-		write_digit(vla.address, vla.coord);
+		write_digit(vla.digit, vla.segments);
 		break;
 
-	    case RSA_BOX_READ_DIGIT:
+	case RSA_BOX_READ_DIGIT:
 		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
 				   sizeof(rsa_box_arg_t)))
 			return -EACCES;
-		if (vla.address > 8)
+		if (vla.digit > 8)
 			return -EINVAL;
-		vla.coord = dev.segments[vla.address];
+		vla.segments = read_digit(vla.digit);
 		if (copy_to_user((rsa_box_arg_t *) arg, &vla,
 				 sizeof(rsa_box_arg_t)))
 			return -EACCES;
 		break;
 
-	    default:
+	default:
 		return -EINVAL;
 	}
 
@@ -102,6 +108,7 @@ static const struct file_operations vga_led_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl = vga_led_ioctl,
 };
+
 // file_operations holds pointers to functions defined by the driver that performs
 // various operations on the device. 
 // Each field of the structure corresponds to the address of some function
@@ -120,7 +127,7 @@ static struct miscdevice vga_led_misc_device = {
  */
 static int __init vga_led_probe(struct platform_device *pdev)
 {
-	int i, ret;
+	int ret;
 
 	/* Register ourselves as a misc device: creates /dev/rsa_box */
 	ret = misc_register(&vga_led_misc_device);
@@ -145,14 +152,6 @@ static int __init vga_led_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto out_release_mem_region;
 	}
-
-	/* Display a welcome message */
-	/*
-	static unsigned char welcome_message[REGISTERS] = {
-		0x3E, 0x7D, 0x77, 0x08, 0x38, 0x79, 0x5E, 0x00};
-	for (i = 0; i < REGISTERS; i++)
-		write_digit(i, welcome_message[i]);
-	*/
 
 	return 0;
 
@@ -209,5 +208,5 @@ module_init(vga_led_init);
 module_exit(vga_led_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Stephen A. Edwards, Columbia University");
-MODULE_DESCRIPTION("VGA 7-segment LED Emulator");
+MODULE_AUTHOR("RSA Box Team - Columbia University (based on code by Professor Stephen Edwards at Columbia)");
+MODULE_DESCRIPTION("RSA Box - hardware RSA implementation device driver");

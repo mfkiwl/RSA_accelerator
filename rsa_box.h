@@ -3,11 +3,9 @@
 
 #include <linux/ioctl.h>
 
-#define REGISTERS 2
-
 typedef struct {
-  unsigned char address;    /* 0, 1, .. , VGA_LED_DIGITS - 1 */
-  int coord; /* LSB is segment a, MSB is decimal point */
+  int digit;
+  unsigned int segments; 
 } rsa_box_arg_t;
 
 #define RSA_BOX_MAGIC 'q'
