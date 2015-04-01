@@ -14,7 +14,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "rsa_box.h"
+#include "rsa_box.h" 	/* kernel space code */
+#include "primes.h"	/* prime number generating code */
 
 #define BIT_WIDTH 	128
 #define INT_SIZE	32
@@ -98,18 +99,32 @@ int main()
     if ( (vga_led_fd = open(filename, O_RDWR)) == -1) {
         fprintf(stderr, "could not open %s\n", filename);
         return -1;
-    } 
+    }
  
     for(i=0; i < RSA_SIZE; i++)
     {
         input_x[i] = i; 
     }
-
+/*
     write_segment(input_x);
     read_segment(return_x);
 
     check_equality(input_x, return_x);   
- 
+*/
+
+    // get large primes
+    int prime_1[BIT_LENGTH / sizeof(int)]; 
+    int prime_2[BIT_LENGTH / sizeof(int)];
+
+    // generate large primes; regenerate if they are equal
+    do {
+	get_large_prime(prime_1);
+	get_large_prime(prime_2);
+    } while (are_equal(prime_1, prime_2) == TRUE);
+
+    print_prime(prime_1);
+    print_prime(prime_2);
+
     printf("RSA Box device driver terminating\n");
     return 0;
 }

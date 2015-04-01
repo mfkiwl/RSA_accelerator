@@ -19,6 +19,8 @@ clean:
 	${MAKE} -C ${KERNEL_SOURCE} SUBDIRS=${PWD} clean
 	${RM} hello *~
 
+hello: primes.o primes.h
+
 socfpga.dtb : socfpga.dtb
 	dtc -O dtb -o socfpga.dtb socfpga.dts
 
