@@ -52,15 +52,13 @@ struct vga_led_dev {
  */
 static void write_digit(int digit, u32 segments)
 { 
-	iowrite32(segments, dev.virtbase + digit * 2);
-        printk("write digit: %d\n", digit);
+	iowrite32(segments, dev.virtbase + digit * 4);
 }
 
 static u32 read_digit(int digit)
 { 
 	u32 answer; 
-	answer = ioread32(dev.virtbase + digit * 2);
-        printk("read digit: %d\n", digit); 
+	answer = ioread32(dev.virtbase + digit * 4);
 	return answer; 
 }
 
@@ -78,8 +76,6 @@ static long vga_led_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
 				   sizeof(rsa_box_arg_t)))
 			return -EACCES;
-		if (vla.digit > 8)
-			return -EINVAL;
 		write_digit(vla.digit, vla.segments);
 		break;
 
@@ -87,8 +83,6 @@ static long vga_led_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
 				   sizeof(rsa_box_arg_t)))
 			return -EACCES;
-		if (vla.digit > 8)
-			return -EINVAL;
 		vla.segments = read_digit(vla.digit);
 		if (copy_to_user((rsa_box_arg_t *) arg, &vla,
 				 sizeof(rsa_box_arg_t)))
