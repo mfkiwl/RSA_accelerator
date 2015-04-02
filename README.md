@@ -19,3 +19,11 @@ rmmod vga_led
 
 ### Dependencies:
  * [GMP](https://gmplib.org/)
+
+### Updating the Linux device tree on FPGA:
+* from [device_tree_files](https://github.com/ohEmily/RSA_accelerator/tree/master/device_tree_files), run:
+```
+/usr/src/linux/scripts/dtc/dtc -O dtb -o socfpga.dtb socfpga.dts
+```
+ * this should generate a new `dtb` file
+ * from the host OS, copy the `dtb` file to overwrite the `dtb` file in `\user6\spring15\[my_uni]\root`
