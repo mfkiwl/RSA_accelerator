@@ -14,7 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "../rsa_box.h" 	/* kernel space code */
+#include "../rsa_box.h" /* kernel space code */
 #include "primes.h"	/* prime number generating code */
 
 #define BIT_WIDTH 	128
