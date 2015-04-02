@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+//before writing any data, you need to specify which instruction you want to use. 
+//this is done by writing address 0, i.e. INSTRUCTION with the appropriate action (MAKE_KEY, ENCRYPT, DECRYPT...)
 #define INSTRUCTION 0
 #define MAKE_KEY 1
 #define ENCRYPT 2
@@ -273,7 +275,10 @@ int main()
     int i;
     int j; 
     unsigned int randx; 
-    unsigned int input_x[12]; 
+    unsigned int input_x_decrypt[12];
+    unsigned int input_x_encrypt[5]; 
+    unsigned int input_x_n[4]; 
+    
     unsigned int return_x[4]; 
     int iterations; 
     static const char filename[] = "/dev/vga_led";
@@ -284,51 +289,35 @@ int main()
         fprintf(stderr, "could not open %s\n", filename);
         return -1;
     } 
-
+    
+    for(i=0; i<12; i++)
+    	input_x_decrypt[i] = 1; 
+    for(i=0; i<5; i++)
+    	input_x_encrypt[i] = 1; 
+    for(i=0; i<4; i++){
+    	if(i%2 != 0)
+    	   input_x_n[i] = 0; 
+    	input_x_n[i] = 1000; 
+    }
     printf("opened file...\n");
  
-    /*
-    for(i=0; i < RSA_SIZE; i++)
-    {
-        input_x[i] = randx; ; 
-    }
-   
-
-    randx = 1; 
-    for(i=0; i < 32; i++)
-    {
-	randx = randx<<1|1; 
-    }
-    */
-
-    // printf("%u\n", randx); 
-    input_x[0] = 0; 
-    input_x[1] = 1; 
-    input_x[2] = 1; 
-    input_x[3] = 0; 
-    input_x[4] = 0;
-    input_x[5] = 0; 
-    input_x[6] = 1; 
-    input_x[7] = 1; 
-    input_x[8] = 0; 
-    input_x[9] = 0; 
-    input_x[10] = 0; 
-    input_x[11] = 1;
-    //write_segment(input_x);
-    decrypt(input_x); 
-    usleep(200); 
-    //decrypt(input_x);
+    decrypt(input_x_decrypt); 
     printf("called decrypt...\n");
     read_segment(return_x);
     print_128_bit_integer(return_x); 
     printf("called read segment...\n");
-
-    //check_equality(input_x, return_x);   
-     
-
-    //iterations = 100000; 
-    //C_timing(iterations); 
-    //fpga_timing(iterations); 
+    
+    decrypt(input_x_encrypt); 
+    printf("called encrypt...\n");
+    read_segment(return_x);
+    print_128_bit_integer(return_x); 
+    printf("called read segment...\n");
+    
+    decrypt(input_x_n); 
+    printf("called make keys...\n");
+    read_segment(return_x);
+    print_128_bit_integer(return_x); 
+    printf("called read segment...\n");
     printf("RSA Box device driver terminating\n");
     return 0;
 }
