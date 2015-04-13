@@ -155,7 +155,7 @@ module ALU(
 			 input logic clk, 
 			 input logic reset,
           input logic[127:0] keyBits,
-          input[1:0] functionCall,
+          input logic [1:0] functionCall,
 			 input logic[383:0] decryptBits,
 			 input logic[159:0] encryptBits,
 			 output logic [127:0] outputBits
@@ -193,13 +193,14 @@ module ALU(
 								a[4:0] <= encryptBits[4:0]; 
 								b[4:0] <= encryptBits[36:32]; 
 								n[4:0] <= encryptBits[66:64]; 
-								outputBits[4:0] <= 5'd0; 
+								//outputBits[4:0] <= 5'd0; 
 							end
 						1'b1:
 							
 								case(count)
 									5'd5: begin
-										outputBits[4:0] <= r[4:0]; 
+										outputBits[4:0] <= r[4:0];
+									   state <= 1'b0; 	
 									end
 									
 									5'd0: begin
@@ -210,7 +211,7 @@ module ALU(
 											step2 <= 1'b1; 
 											end
 										
-										if(step2) begin
+										else if(step2) begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]-n[4:0]); 
 												end
@@ -218,7 +219,7 @@ module ALU(
 											step3 <= 1'b1; 
 											end
 										
-										if(step3) begin
+										else begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]- n[4:0]); 
 												end
@@ -226,16 +227,17 @@ module ALU(
 											step1 <= 1'b1; 
 											count <= (count+1); 
 											end
+											
 										end
 									
 									5'd1: begin
-										if(step1) begin
+										 if(step1) begin
 											r[4:0]<= ((r[4:0]<<1) + (a[3]*b[4:0])); 
 											step1 <=1'b0; 
 											step2 <= 1'b1; 
 											end
 										
-										if(step2) begin
+										else if(step2) begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]-n[4:0]); 
 												end
@@ -243,7 +245,7 @@ module ALU(
 											step3 <= 1'b1; 
 											end
 										
-										if(step3) begin
+										else  begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]- n[4:0]); 
 												end
@@ -260,7 +262,7 @@ module ALU(
 											step2 <= 1'b1; 
 											end
 										
-										if(step2) begin
+										else if(step2) begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]-n[4:0]); 
 												end
@@ -268,7 +270,7 @@ module ALU(
 											step3 <= 1'b1; 
 											end
 										
-										if(step3) begin
+										else  begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]- n[4:0]); 
 											end
@@ -285,7 +287,7 @@ module ALU(
 											step2 <= 1'b1; 
 											end
 										
-										if(step2) begin
+										else if(step2) begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]-n[4:0]); 
 											end
@@ -293,7 +295,7 @@ module ALU(
 											step3 <= 1'b1; 
 											end
 										
-										if(step3) begin
+										else begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]- n[4:0]); 
 												end
@@ -310,7 +312,7 @@ module ALU(
 											step2 <= 1'b1; 
 											end
 										
-										if(step2) begin
+										else if(step2) begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]-n[4:0]); 
 												end
@@ -318,7 +320,7 @@ module ALU(
 											step3 <= 1'b1; 
 											end
 										
-										if(step3) begin
+										else  begin
 											if(r[4:0] >= n[4:0]) begin
 												r[4:0] <= (r[4:0]- n[4:0]); 
 												end
