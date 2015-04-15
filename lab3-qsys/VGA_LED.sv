@@ -129,6 +129,38 @@ module VGA_LED(input logic      clk,
             endcase  
 endmodule
 
+module blakely_step(
+        input logic[4:0] count,  
+        input logic trigger,
+        input logic[1:0] state, 
+        output logic[4:0] r 
+    );
+
+    /*
+        represents single step in Blakely...
+        step may be 0, 1, 2, 3
+        count may be 0, 1, 2, 3, 4 (not 5 for now)
+    */
+
+    if(count == 4'd5) 
+        trigger = 1'b0;
+
+    if(trigger != 1'b0) begin 
+        r[4:0]<= ((r[4:0] << 1) + (a[4 - count[4:0]] * b[4:0])); 
+        
+        if(r[4:0] >= n[4:0]) begin
+            r[4:0] <= (r[4:0] - n[4:0]); 
+        end
+        
+        if(r[4:0] >= n[4:0]) begin
+            r[4:0] <= (r[4:0] - n[4:0]); 
+        end
+
+        count <= (count + 1); 
+    end
+
+endmodule
+
 module ALU(
         input logic             clk, 
         input logic             reset,
@@ -144,7 +176,11 @@ module ALU(
     logic[4:0] r, a, b, n; 
     logic[4:0] count; 
     logic step1, step2, step3; 
+
+    logic trigger;
    
+    blakely_step b_step( .*  );
+
     always_ff @(posedge clk) begin
         
         /* reset triggered when clock starts */
@@ -155,6 +191,7 @@ module ALU(
             step1 <= 1'b1; 
             step2 <= 1'b0; 
             step3 <= 1'b0;
+            trigger <= 1'b0;
         end
     
         case(functionCall)
@@ -176,6 +213,7 @@ module ALU(
                         a[4:0] <= encryptBits[4:0]; 
                         b[4:0] <= encryptBits[36:32]; 
                         n[4:0] <= encryptBits[66:64]; 
+                        trigger <= 1'b0;
                         // outputBits[4:0] <= 5'd0; 
                     end
                     
@@ -188,131 +226,26 @@ module ALU(
                             end
                             
                             5'd0: begin
-                                
-                                if(step1) begin
-                                    r[4:0]<= ((r[4:0] << 1) + (a[4] * b[4:0])); 
-                                    step1 <= 1'b0; 
-                                    step2 <= 1'b1; 
-                                end
-                                
-                                else if(step2) begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                    end
-                                    step2 <= 1'b0; 
-                                    step3 <= 1'b1; 
-                                end
-                                
-                                else begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                    end
-                                    step3 <= 1'b0; 
-                                    step1 <= 1'b1; 
-                                    count <= (count+1); 
-                                end
+                                count <= 5'd1;
+                                trigger <= 1;
                             end
-                            
+
                             5'd1: begin
-                                if(step1) begin
-                                    r[4:0] <= ((r[4:0] << 1) + (a[3] * b[4:0])); 
-                                    step1 <= 1'b0; 
-                                    step2 <= 1'b1; 
-                                end
-                                
-                                else if(step2) begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                    end
-                                    step2 <= 1'b0; 
-                                    step3 <= 1'b1; 
-                                end
-                                
-                                else begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0]- n[4:0]); 
-                                    end
-                                    step3 <= 1'b0; 
-                                    step1 <= 1'b1; 
-                                    count <= (count + 1); 
-                                end
+                                count <= 5'd2;
+                                trigger <= 1;
+                            end
+
+                            5'd2: begin
+                                count <= 5'd3;
+                                trigger <= 1;
+                            end
+
+                            5'd3: begin
+                                count <= 5'd4;
+                                trigger <= 1;
                             end
                             
-                            5'd2: begin
-                                if(step1) begin
-                                    r[4:0]<= ((r[4:0] << 1) + (a[2] * b[4:0])); 
-                                    step1 <=1'b0; 
-                                    step2 <= 1'b1; 
-                                end
-                                
-                                else if(step2) begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                    end
-                                    step2 <= 1'b0; 
-                                    step3 <= 1'b1; 
-                                end
-                                
-                                else begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                    end
-                                    step3 <= 1'b0; 
-                                    step1 <= 1'b1; 
-                                    count <= (count+1); 
-                                    end
-                                end
-                            
-                            5'd3: begin
-                                if(step1) begin
-                                    r[4:0] <= ((r[4:0]<<1) + (a[1] * b[4:0])); 
-                                    step1 <= 1'b0; 
-                                    step2 <= 1'b1; 
-                                end
-                                
-                                else if(step2) begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                    end
-                                    step2 <= 1'b0; 
-                                    step3 <= 1'b1; 
-                                    end
-                                
-                                else begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                        end
-                                    step3 <= 1'b0; 
-                                    step1 <= 1'b1; 
-                                    count <= (count+1); 
-                                    end
-                                end
-                            
-                            5'd4: begin
-                                if(step1) begin
-                                    r[4:0] <= ((r[4:0] << 1) + (a[0] * b[4:0])); 
-                                    step1 <= 1'b0; 
-                                    step2 <= 1'b1; 
-                                    end
-                                
-                                else if(step2) begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                        end
-                                    step2 <= 1'b0; 
-                                    step3 <= 1'b1; 
-                                    end
-                                
-                                else begin
-                                    if(r[4:0] >= n[4:0]) begin
-                                        r[4:0] <= (r[4:0] - n[4:0]); 
-                                        end
-                                    step3 <= 1'b0; 
-                                    step1 <= 1'b1; 
-                                    count <= (count + 1); 
-                                    end
-                                end
-                            endcase
+                        endcase
                 endcase
             
             /* will implement Extended Euclid's here */

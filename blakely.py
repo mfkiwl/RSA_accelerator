@@ -3,7 +3,7 @@ def blakely(a,b,n, k_bits):
     count = long(k_bits-1)
      
     for i in range(k_bits):
-        r = ( (r<<1) + ( ( ((1<<count) & a)>>count )* b))
+        r = ( (r<<1) + ( (( (1<<count) & a)>>count )* b))
         if r>=n:
             r -= n
         if r>=n:
