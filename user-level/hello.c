@@ -17,8 +17,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-//before writing any data, you need to specify which instruction you want to use. 
-//this is done by writing address 0, i.e. INSTRUCTION with the appropriate action (MAKE_KEY, ENCRYPT, DECRYPT...)
+// before writing any data, you need to specify which instruction you want to use. 
+// this is done by writing address 0, i.e. INSTRUCTION with the appropriate action (MAKE_KEY, ENCRYPT, DECRYPT...)
+
 #define INSTRUCTION 0
 #define MAKE_KEY 1
 #define ENCRYPT 2
@@ -160,15 +161,15 @@ void decrypt(unsigned int *cypher_n_d)
    
 }
 
-//function to read 128 bit from kernel space and store the value in bit_output in userspace
+// read 128 bit from kernel space into user space and store in [bit_output]
 void read_segment(unsigned int *bit_output)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
+
     for(i = 0; i < READ_SIZE_RSA ; i++){
     	rsa_userspace_vals.digit = BIT_SEGMENTS_READ[i];
     	
-	// reads value from kernel space into user space
 	if (ioctl(vga_led_fd, RSA_BOX_READ_DIGIT, &rsa_userspace_vals)) {
       		perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     	}
@@ -177,109 +178,31 @@ void read_segment(unsigned int *bit_output)
     }
 }
 
-//function to print the 128 bit number, it just prints the sections rather than the value. 
+// print out 128 bit int, but by [sections]
 void print_128_bit_integer(unsigned int *input_x){
    int i;  
    
    for(i = 0; i < 4; i++)
    {
-	printf("Quartile(%d): %u\n", i+1, input_x[i]);  
+	printf("quartile(%d): %u\n", i+1, input_x[i]);  
    }
-}
-
-/*
-
-void C_timing(int iterations){
-     clock_t begin, end;
-     int i; 
-     double time_spent;
-     begin = clock();
-     for(i=0; i<iterations; i++)
-	{
-	int first = 0; 
-	int second = 1; 
-	int third = 2; 
-	int fourth =3; 
-	
-	first += second; 
-	third += fourth; 
-	first = first>>16; 
-	second = second>>16; 
-	third = third>>16; 
-	fourth = fourth >>16; 
-
-	int temp1 = first*third; 
-	int temp2 = second*fourth; 
-	int temp3 = (first+second)*(third+fourth) - temp1 - temp2;  	
-	int response = temp1<<32 + temp2 + temp3<<16; 
-	}
-        end = clock();
-	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	printf("C timing: %lf\n", time_spent); 
-}
-
-void fpga_timing(int iterations){
-     
-     unsigned int input_x[RSA_SIZE]; 
-     unsigned int return_x[RSA_SIZE]; 
-     clock_t begin, end;
-     int i; 
-     double time_spent;
-     for(i=0; i<RSA_SIZE; i++){
-	input_x[i] = i; 
-     }
-     begin = clock();
-     write_segment(input_x);
-     for(i=0; i<iterations; i++)
-	{
-	    
-    	    read_segment(return_x);
-
-	}
-      end = clock();
-      time_spent = (double)(end - begin) / CLOCKS_PER_SEC; 
-      printf("FPGA timing: %lf\n", time_spent); 
-
-}
-
-
-*/
-//function to test that the value sent to be written is equal to value read
-void check_equality(unsigned int *input_x, unsigned int *return_x){
-    int i; 
-    
-    /*
-    printf("Write Values\n"); 
-    print_128_bit_integer(input_x);
-    */
-    printf("Read Values\n"); 
-    print_128_bit_integer(return_x); 
-
-    // printf("E value: %d\n", return_x[4]); 
-   
-
-/* 
-   for(i = 0; i < RSA_SIZE; i++)
-    {
-	if(!(input_x[i] == return_x[i]) )
-	{
-	    perror("Error reading/writing, values do not match\n"); 
-	}
-    }
-*/
-    printf("Read/Write Successful\n"); 
 }
 
 int main()
 {
-    int i;
-    int j; 
+
+    /*
+     * main tests
+     */
+
+    int i, j; 
     unsigned int randx; 
     unsigned int input_x_decrypt[12];
     unsigned int input_x_encrypt[5]; 
     unsigned int input_x_n[4]; 
     
     unsigned int return_x[4]; 
+    
     int iterations; 
     static const char filename[] = "/dev/rsa_box";
 
@@ -290,18 +213,16 @@ int main()
         return -1;
     } 
     
+    // [setting] message to decrypt
     for(i=0; i<12; i++)
     	input_x_decrypt[i] = 1; 
-    //for(i=0; i<5; i++)
-    //	input_x_encrypt[i] = 1; 
+    
+    // [setting] n
     for(i=0; i<4; i++){
     	if(i%2 != 0)
     	   input_x_n[i] = 0; 
     	input_x_n[i] = 1000; 
     }
-
-    
-    printf("opened file...\n");
  
     decrypt(input_x_decrypt); 
     printf("called decrypt...\n");
@@ -309,29 +230,33 @@ int main()
     print_128_bit_integer(return_x); 
     printf("called read segment...\n");
     
+    // [setting] message to encrypt
     input_x_encrypt[0] = 5; 
     input_x_encrypt[1] = 5; 
     input_x_encrypt[2] = 3; 
     input_x_encrypt[3] = 0; 
     input_x_encrypt[4] = 0 ;  
     
+    // [setting] return values (reset to 0)
     return_x[0] = 0; 
     return_x[1] = 0; 
     return_x[2] = 0; 
     return_x[3] = 0; 
 
+    printf("[encrypt...]\n");
     encrypt(input_x_encrypt); 
-    printf("called encrypt...\n");
-    //sleep(4); 
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-    printf("called read segment...\n");
     
-    make_keys(input_x_n); 
-    printf("called make keys...\n");
+    printf("[read result...]\n");
     read_segment(return_x);
     print_128_bit_integer(return_x); 
-    printf("called read segment...\n");
-    printf("RSA Box device driver terminating\n");
+    
+    printf("[make keys...]\n");
+    make_keys(input_x_n); 
+
+    printf("[read result...]\n");
+    read_segment(return_x);
+    print_128_bit_integer(return_x); 
+
+    printf("...done\n");
     return 0;
 }
