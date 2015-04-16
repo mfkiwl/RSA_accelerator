@@ -2,6 +2,7 @@
  * Code for RSA Box, a hardware implementation of the RSA algorithm.
  */
 
+
 module VGA_LED(input logic      clk,
         input logic             reset,
         input logic[31:0]       data_in,
@@ -39,29 +40,30 @@ module VGA_LED(input logic      clk,
         if (reset) begin
             
             /* reset triggered when clock starts */
-            data_out <= 32'd0; 
-            instrBits <= 32'd0;     // reset typeof(instr)
-            keyBits <= 128'd0;
-            encryptBits <= 160'd0;
-            decryptBits <= 384'd0;
-            functionCall <= 2'd0; 
+            data_out <= 		32'd0; 
+            instrBits <= 		32'd0;     // reset typeof(instr)
+            keyBits <= 			128'd0;
+            encryptBits <= 	160'd0;
+            decryptBits <= 	384'd0;
+            functionCall <= 	2'd0; 
 
-        end 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-        /* writing */                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        end
+
+		  /* writing */                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
         else if (chipselect && write) begin
         
-            /* instruction */
+            /* determine what kind of instruction this is */
             if (address == 3'b000) begin
                 instrBits[31:0] <= data_in[31:0];
             end
             
             /* keys instruction */  
             if(instrBits[1:0] == 2'b01) begin
+				    // write data to encrypt to keyBits
                 case(address)
-                    3'b001: keyBits[31:0] <= data_in[31:0];
-                    3'b010: keyBits[63:32] <= data_in[31:0];
-                    3'b011: keyBits[95:64] <= data_in[31:0];
+                    3'b001: keyBits[31:0] <= 	data_in[31:0];
+                    3'b010: keyBits[63:32] <= 	data_in[31:0];
+                    3'b011: keyBits[95:64] <= 	data_in[31:0];
                     3'b100: begin
                         keyBits[127:96] <= data_in[31:0];
                         functionCall <= 2'b01; // all data recvd (trigger call)
@@ -72,9 +74,9 @@ module VGA_LED(input logic      clk,
             /* encryption instruction */
             else if(instrBits[1:0] == 2'b10) begin
                 case(address)
-                    3'b001: encryptBits[31:0] <= data_in[31:0];
-                    3'b010: encryptBits[63:32] <= data_in[31:0];
-                    3'b011: encryptBits[95:64] <= data_in[31:0];
+                    3'b001: encryptBits[31:0] <= 	data_in[31:0];
+                    3'b010: encryptBits[63:32] <= 	data_in[31:0];
+                    3'b011: encryptBits[95:64] <= 	data_in[31:0];
                     3'b100: encryptBits[127:96] <= data_in[31:0];
                     3'b101: begin
                         encryptBits[159:128] <= data_in[31:0];
@@ -83,18 +85,21 @@ module VGA_LED(input logic      clk,
                 endcase
             end
                  
-            /* decryption instruction */
+            /* decryption instruction. The 3 DECRYPT_[1-3] instructions are given sequentially. */
+				/* write bits piecewise to decryptBits */
             else if(instrBits[1:0] == 2'b11) begin
                 case(instrBits[4:2])
+					     // DECRYPT_1 instruction
                     2'b00: begin
                         case(address)
-                            3'b001: decryptBits[31:0] <= data_in[31:0];
-                            3'b010: decryptBits[63:32] <= data_in[31:0];
-                            3'b011: decryptBits[95:64] <= data_in[31:0];
-                            3'b100: decryptBits[127:96] <= data_in[31:0];
+                            3'b001: decryptBits[31:0] <= 	data_in[31:0];
+                            3'b010: decryptBits[63:32] <= 	data_in[31:0];
+                            3'b011: decryptBits[95:64] <= 	data_in[31:0];
+                            3'b100: decryptBits[127:96] <= 	data_in[31:0];
                         endcase
                     end
                     
+						  // DECRYPT_2 instruction
                     2'b01: begin
                         case(address)
                             3'b001: decryptBits[159:128] <= data_in[31:0];
@@ -104,6 +109,7 @@ module VGA_LED(input logic      clk,
                         endcase
                     end
                     
+						  // DECRYPT_3 instruction
                     2'b10: begin
                         case(address)
                             3'b001: decryptBits[287:256] <= data_in[31:0];
@@ -203,6 +209,7 @@ module ALU(
             2'b01: 
                 outputBits[127:0] <= (keyBits[63:0] * keyBits[127:64]);
             
+				/* Encrypt */
             2'b10:  
                 case(state)
                     
@@ -253,7 +260,8 @@ module ALU(
                         endcase
                 endcase
             
-            /* will implement Extended Euclid's here */
+				
+				/* Decrypt: will implement Extended Euclid's here to determine private key */
             2'b11:
                 outputBits[127:0] <= 128'b11; 
         endcase
