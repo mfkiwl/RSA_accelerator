@@ -1,5 +1,11 @@
 ## RSA Box
 
+For the hardware, the updated code is in the same repo as the C code, which is:
+
+```
+/sockit/lab3-enp2111/root/root/RSAB
+```
+
 From the FPGA, run:
 ```
 make
