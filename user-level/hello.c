@@ -54,6 +54,8 @@ void make_keys(unsigned int *p_and_q)
     	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
     	rsa_userspace_vals.segments =  p_and_q[i];
 
+	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], p_and_q[i]); 
+
     	if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
       	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
@@ -214,21 +216,22 @@ int main()
     } 
     
     // [setting] message to decrypt
-    for(i=0; i<12; i++)
+    for(i = 0; i < 12; i++)
     	input_x_decrypt[i] = 1; 
     
     // [setting] n
-    for(i=0; i<4; i++){
-    	if(i%2 != 0)
-    	   input_x_n[i] = 0; 
-    	input_x_n[i] = 1000; 
-    }
+    input_x_n[0] = 0;
+    input_x_n[1] = 1;
+    input_x_n[2] = 0;
+    input_x_n[3] = 1;
  
-    decrypt(input_x_decrypt); 
-    printf("called decrypt...\n");
+    // DECRYPT
+    printf("\n[decrypt...]\n\n");
+    decrypt(input_x_decrypt);
+
+    printf("\n[read result...]\n\n"); 
     read_segment(return_x);
     print_128_bit_integer(return_x); 
-    printf("called read segment...\n");
     
     // [setting] message to encrypt
     input_x_encrypt[0] = 5; 
@@ -243,20 +246,22 @@ int main()
     return_x[2] = 0; 
     return_x[3] = 0; 
 
-    printf("[encrypt...]\n");
+    // ENCRYPT
+    printf("\n[encrypt...]\n\n");
     encrypt(input_x_encrypt); 
     
-    printf("[read result...]\n");
+    printf("\n[read result...]\n\n");
     read_segment(return_x);
     print_128_bit_integer(return_x); 
     
-    printf("[make keys...]\n");
+    // MAKE KEYS
+    printf("\n[make keys...]\n\n");
     make_keys(input_x_n); 
 
-    printf("[read result...]\n");
+    printf("\n[read result...]\n\n");
     read_segment(return_x);
     print_128_bit_integer(return_x); 
 
-    printf("...done\n");
+    printf("\n...done\n");
     return 0;
 }

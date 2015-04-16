@@ -129,11 +129,15 @@ module VGA_LED(input logic      clk,
             endcase  
 endmodule
 
-module blakely_step(
-        input logic[4:0] count,  
+module blakelyStep(
+        input clk,
+		  input logic[4:0] count,  
         input logic trigger,
         input logic[1:0] state, 
-        output logic[4:0] r 
+		  input logic [4:0] n,
+		  input logic [4:0] a, 
+		  input logic [4:0] b,
+        output logic[4:0] r
     );
 
     /*
@@ -142,22 +146,22 @@ module blakely_step(
         count may be 0, 1, 2, 3, 4 (not 5 for now)
     */
 
-    if(count == 4'd5) 
-        trigger = 1'b0;
+	 always_ff @(posedge clk) begin
+			  
+		 if(trigger != 1'b0) begin 
+			  r[4:0]<= ((r[4:0] << 1) + (a[4 - count[4:0]] * b[4:0])); 
+			  
+			  if(r[4:0] >= n[4:0]) begin
+					r[4:0] <= (r[4:0] - n[4:0]); 
+			  end
+			  
+			  if(r[4:0] >= n[4:0]) begin
+					r[4:0] <= (r[4:0] - n[4:0]); 
+			  end
 
-    if(trigger != 1'b0) begin 
-        r[4:0]<= ((r[4:0] << 1) + (a[4 - count[4:0]] * b[4:0])); 
-        
-        if(r[4:0] >= n[4:0]) begin
-            r[4:0] <= (r[4:0] - n[4:0]); 
-        end
-        
-        if(r[4:0] >= n[4:0]) begin
-            r[4:0] <= (r[4:0] - n[4:0]); 
-        end
-
-        count <= (count + 1); 
-    end
+			  // count <= (count + 1); // TO IMPLEMENT?
+		 end
+	 end 
 
 endmodule
 
@@ -177,9 +181,9 @@ module ALU(
     logic[4:0] count; 
     logic step1, step2, step3; 
 
-    logic trigger;
+    logic trigger = 1'b0;
    
-    blakely_step b_step( .*  );
+    blakelyStep bStep( .*  );
 
     always_ff @(posedge clk) begin
         
@@ -223,6 +227,7 @@ module ALU(
                             5'd5: begin
                                 outputBits[4:0] <= r[4:0]; 
                                 state <= 1'b0;
+										  trigger <= 0;
                             end
                             
                             5'd0: begin
@@ -250,7 +255,7 @@ module ALU(
             
             /* will implement Extended Euclid's here */
             2'b11:
-                outputBits[127:0] <= 2'd2; 
+                outputBits[127:0] <= 128'b11; 
         endcase
         
     end
