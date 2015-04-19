@@ -36,13 +36,6 @@ static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5};
 static int BIT_SEGMENTS_READ[4] = {0, 1, 2, 3};
 int vga_led_fd;
 
-// function declarations
-void make_keys(unsigned int *p_and_q);
-void encrypt(unsigned int *message_n);
-void decrypt(unsigned int *cypher_n_d);
-void read_segment(unsigned int *bit_output);
-void print_128_bit_integer(unsigned int *input_x);
-
 void make_keys(unsigned int *p_and_q)
 {
     rsa_box_arg_t rsa_userspace_vals;
