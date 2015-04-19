@@ -67,7 +67,7 @@ static u32 read_digit(int digit)
  * Read or write the segments on single digits.
  * Note extensive error checking of arguments
  */
-static long vga_led_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+static long vga_led_ioctl(struct file *f, uint32_t cmd, unsigned long arg)
 {
 	rsa_box_arg_t vla;
 

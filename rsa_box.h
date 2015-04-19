@@ -2,10 +2,11 @@
 #define _RSA_BOX_H
 
 #include <linux/ioctl.h>
+#include <stdint.h>     /* for unit32_t */
 
 typedef struct {
   int digit;
-  unsigned int segments; 
+  uint32_t segments; 
 } rsa_box_arg_t;
 
 #define RSA_BOX_MAGIC 'q'
