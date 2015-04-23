@@ -33,3 +33,9 @@ rmmod vga_led
 ```
  * this should generate a new `dtb` file
  * from the host OS, copy the `dtb` file to overwrite the `dtb` file in `\user6\spring15\[my_uni]\root`
+ * 
+ 
+### Getting verilator to work
+```
+Go to http://www.veripool.org/projects/verilator/wiki/Installing
+```
