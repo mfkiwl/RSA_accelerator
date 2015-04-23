@@ -46,4 +46,19 @@ cd verilator*
 make
 sudo make install
 ```
+### Compiling and running Verilog code
 
+In the same directory as the verilog code create a c++ file with the appropriate structure (read man pages, and look at sample code in verilator/)
+Compile with the following command: 
+```
+verilator -Wall --cc some_verilog_file.sv --exe some_simulation.cpp
+```
+This will create a obj_dir/ directory
+```
+cd into obj_dir
+make -j -f Vsome_verilog_file.mk Vsome_verilog_file
+```
+Then run
+```
+./Vsome_verilog_file
+```
