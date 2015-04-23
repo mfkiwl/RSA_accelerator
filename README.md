@@ -37,5 +37,7 @@ rmmod vga_led
  
 ### Getting verilator to work
 ```
-Go to http://www.veripool.org/projects/verilator/wiki/Installing
+Download from http://www.veripool.org/projects/verilator/wiki/Installing
+Make sure you have all the required packages like flex and bison
 ```
+
