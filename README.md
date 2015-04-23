@@ -39,5 +39,10 @@ rmmod vga_led
 ```
 Download from http://www.veripool.org/projects/verilator/wiki/Installing
 Make sure you have all the required packages like flex and bison
+tar xvzf verilator*.t*gz
+cd verilator*
+./configure
+make
+sudo make install
 ```
 
