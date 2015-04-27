@@ -51,7 +51,7 @@ sudo make install
 In the same directory as the verilog code create a c++ file with the appropriate structure (read man pages, and look at sample code in verilator/)
 Compile with the following command: 
 ```
-verilator -Wall --cc some_verilog_file.sv --exe some_simulation.cpp
+verilator -Wall -CLAGS -std=c++11 --cc some_verilog_file.sv --exe some_simulation.cpp
 ```
 This will create a obj_dir/ directory
 ```
