@@ -17,7 +17,7 @@
 #include <time.h>       /* for sleep() */
 #include <stdint.h>     /* for unit32_t */
 #include "../rsa_box.h"
-
+#include "instructions.h"
 
 // function declarations
 void make_keys(uint32_t *p_and_q);
@@ -25,18 +25,6 @@ void encrypt(uint32_t *message_n);
 void decrypt(uint32_t *cypher_n_d);
 void read_segment(uint32_t *bit_output);
 void print_128_bit_integer(uint32_t *input_x);
-
-
-/*
- * before writing any data, specify which instruction will be used:
- * write INSTRUCTION with desired action (e.g. MAKE_KEY, ENCRYPT, etc)
- */
-#define INSTRUCTION 0
-#define MAKE_KEY 1
-#define ENCRYPT 2
-#define DECRYPT_1 3
-#define DECRYPT_2 7
-#define DECRYPT_3 11
 
 /* size constants */
 #define ADDR_SIZE_MAKE_KEY 4
