@@ -1,6 +1,6 @@
 /* verilator lint_off WIDTH */
 /* verilator lint_off UNUSED */
-module blakely5(input logic clk,input logic reset_l, input logic[4:0] a, input logic[4:0] b, input logic[4:0] n,  output logic[4:0] out_number, output logic ready); 
+module blakley5(input logic clk,input logic reset_l, input logic[4:0] a, input logic[4:0] b, input logic[4:0] n,  output logic[4:0] out_number, output logic ready); 
 
 logic fun;
 logic [5:0] count;
