@@ -234,7 +234,7 @@ module ALU(
                             5'd5: begin
                                 outputBits[4:0] <= r[4:0]; 
                                 state <= 1'b0;
-										  trigger <= 0;
+			        trigger <= 0;
                             end
                             
                             5'd0: begin
