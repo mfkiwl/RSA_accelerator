@@ -1,7 +1,6 @@
 CFLAGS=-std=c++11
-
 VBlakely:
-	verilator -Wall -CFLAGS $(CFLAGS) -cc blakely.sv --exe --trace blakely_sim_main.cpp
+	verilator -Wall -CFLAGS $(CFLAGS) -cc -sv blakely.sv --trace --exe blakely_sim_main.cpp
 	cd obj_dir; make -j -f Vblakely.mk Vblakely
 VVGA_LED:
 	verilator -Wall -CFLAGS $(CFLAGS) -cc VGA_LED.sv --exe vga_sim_main.cpp
