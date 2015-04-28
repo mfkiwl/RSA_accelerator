@@ -1,4 +1,4 @@
-#include "Vblakely.h"
+#include "Vblakely5.h"
 #include "verilated.h"
 #include <iostream>
 #include "verilated_vcd_c.h"
@@ -15,7 +15,7 @@ double sc_time_stamp(){
 }
 
 //toggle clk and set input
-void toggle(Vblakely *top){
+void toggle(Vblakely5 *top){
     
     if((main_time%5) == 0){
         clock_value = !clock_value;
@@ -39,7 +39,7 @@ int main(int argc, char **argv, char **env){
     Verilated::commandArgs(argc, argv);    
 
     //create top module
-    Vblakely *top = new Vblakely; 
+    Vblakely5 *top = new Vblakely5; 
 
     //create traces 
     Verilated::traceEverOn(true);
