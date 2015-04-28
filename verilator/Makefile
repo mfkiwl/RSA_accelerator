@@ -1,11 +1,11 @@
 CFLAGS=-std=c++11
 
 B128:
-	verilator -Wall -CFLAGS $(CFLAGS) -cc -sv blakley128.sv --trace --exe 128_b.cpp
+	verilator -Wall -CFLAGS $(CFLAGS) -cc -sv blakley128.sv --trace --exe blakley128_sim_main.cpp
 	cd obj_dir; make -j -f Vblakley128.mk Vblakley128
 
 B5:
-	verilator -Wall -CFLAGS $(CFLAGS) -cc -sv blakley5.sv --trace --exe blakley_sim_main.cpp
+	verilator -Wall -CFLAGS $(CFLAGS) -cc -sv blakley5.sv --trace --exe blakley5_sim_main.cpp
 	cd obj_dir; make -j -f Vblakley5.mk Vblakley5
 
 VVGA_LED:
