@@ -19,12 +19,6 @@
 #include "../rsa_box.h"
 #include "instructions.h"
 
-// function declarations
-void make_keys(uint32_t *p_and_q);
-void encrypt(uint32_t *message_n);
-void decrypt(uint32_t *cypher_n_d);
-void read_segment(uint32_t *bit_output);
-void print_128_bit_integer(uint32_t *input_x);
 
 /* size constants */
 #define ADDR_SIZE_MAKE_KEY 4
@@ -35,10 +29,18 @@ void print_128_bit_integer(uint32_t *input_x);
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
 static int BIT_SEGMENTS_READ[4] = {0, 1, 2, 3};
-int vga_led_fd;
+static int rsa_box_fd;
 
+void set_fd()
+{
+    char *filename = "/dev/rsa_box";
+    if ( (rsa_box_fd = open(filename, O_RDWR)) == -1)
+    {
+        fprintf(stderr, "could not open %s\n", filename);
+    } 
+}
 
-void make_keys(uint32_t *p_and_q)
+void store_private_keys(uint32_t *p_and_q)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
@@ -46,7 +48,7 @@ void make_keys(uint32_t *p_and_q)
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments =  MAKE_KEY;
 
-    if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     }
@@ -57,14 +59,14 @@ void make_keys(uint32_t *p_and_q)
 
 	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], p_and_q[i]); 
 
-    	if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
       	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     	}
     }
 }
 
-void encrypt(uint32_t *message_n)
+void intwise_encrypt(uint32_t *message_n)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
@@ -72,7 +74,7 @@ void encrypt(uint32_t *message_n)
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments =  ENCRYPT; 
 
-    if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     }
@@ -83,7 +85,7 @@ void encrypt(uint32_t *message_n)
 
 	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], message_n[i]); 
 
-    	if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
       	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     	}
@@ -93,7 +95,7 @@ void encrypt(uint32_t *message_n)
 }
 
 /* sends decrypt instruction to hardware. */
-void decrypt(uint32_t *cypher_n_d)
+void intwise_decrypt(uint32_t *cypher_n_d)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
@@ -101,7 +103,7 @@ void decrypt(uint32_t *cypher_n_d)
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments = DECRYPT_1;
 
-    if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     }
@@ -113,7 +115,7 @@ void decrypt(uint32_t *cypher_n_d)
 
 	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], cypher_n_d[i]); 
 
-    	if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
       	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     	}
@@ -122,7 +124,7 @@ void decrypt(uint32_t *cypher_n_d)
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments = DECRYPT_2;
 
-    if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     }
@@ -136,7 +138,7 @@ void decrypt(uint32_t *cypher_n_d)
                 BIT_SEGMENTS[i], 
                 cypher_n_d[i+ADDR_SIZE_DECRYPT]); 
 
-    	if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
       	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     	}
@@ -146,7 +148,7 @@ void decrypt(uint32_t *cypher_n_d)
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments = DECRYPT_3;
 
-    if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
@@ -160,7 +162,7 @@ void decrypt(uint32_t *cypher_n_d)
                 BIT_SEGMENTS[i], 
                 cypher_n_d[i + 2 * ADDR_SIZE_DECRYPT]); 
 
-    	if (ioctl(vga_led_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
       	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
@@ -177,7 +179,7 @@ void read_segment(uint32_t *bit_output)
     {
     	rsa_userspace_vals.digit = BIT_SEGMENTS_READ[i];
     	
-	if (ioctl(vga_led_fd, RSA_BOX_READ_DIGIT, &rsa_userspace_vals)) 
+	if (ioctl(rsa_box_fd, RSA_BOX_READ_DIGIT, &rsa_userspace_vals)) 
         {
       		perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
@@ -195,78 +197,4 @@ void print_128_bit_integer(uint32_t *input_x)
    {
 	printf("quartile(%d): %u\n", i, input_x[i]);  
    }
-}
-
-int main()
-{
-    /*
-     * main tests
-     */
-
-    int i, j; 
-    uint32_t randx; 
-    uint32_t input_x_decrypt[12];
-    uint32_t input_x_encrypt[5]; 
-    uint32_t input_x_n[4]; 
-    uint32_t return_x[4]; 
-    
-    static const char filename[] = "/dev/rsa_box";
-
-    printf("RSA Box device driver started\n");
-
-    if ( (vga_led_fd = open(filename, O_RDWR)) == -1)
-    {
-        fprintf(stderr, "could not open %s\n", filename);
-        return -1;
-    } 
-    
-    // [setting] message to decrypt
-    for(i = 0; i < 12; i++)
-    	input_x_decrypt[i] = 1; 
-    
-    // [setting] n
-    input_x_n[0] = 0;
-    input_x_n[1] = 1;
-    input_x_n[2] = 0;
-    input_x_n[3] = 1;
- 
-    // DECRYPT
-    printf("\n[decrypt...]\n\n");
-    decrypt(input_x_decrypt);
-
-    printf("\n[read result...]\n\n"); 
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-    
-    // [setting] message to encrypt
-    input_x_encrypt[0] = 5; 
-    input_x_encrypt[1] = 5; 
-    input_x_encrypt[2] = 3; 
-    input_x_encrypt[3] = 0; 
-    input_x_encrypt[4] = 0 ;  
-    
-    // [setting] return values (reset to 0)
-    return_x[0] = 0; 
-    return_x[1] = 0; 
-    return_x[2] = 0; 
-    return_x[3] = 0; 
-
-    // ENCRYPT
-    printf("\n[encrypt...]\n\n");
-    encrypt(input_x_encrypt); 
-    
-    printf("\n[read result...]\n\n");
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-    
-    // MAKE KEYS
-    printf("\n[make keys...]\n\n");
-    make_keys(input_x_n); 
-
-    printf("\n[read result...]\n\n");
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-
-    printf("\n...done\n");
-    return 0;
 }

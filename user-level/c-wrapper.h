@@ -1,23 +1,12 @@
 #ifndef __C_WRAPPER_H__
 #define __C_WRAPPER_H__
 
-// Start session.
-// Use user-specified private key, return public key.
-int32_t *RSA_init(int32_t *p, int32_t *q); 
-
-// Start session. 
-// Use auto-generated private key, return public key.
-int32_t *RSA_init();
-
-// Save remote public keys to register.
-void set_remote_keys(int32_t *e_other, int32_t *n_other);
-
-// Encryption and decryption using values stored in registers.
-// Raise exception and set errno if relevant register not set.
-char *encrypt(char *msg);
-char *decrypt(char *cypher);
-
-// End session and clear registers.
-void RSA_end();
+// function declarations
+void store_private_keys(uint32_t *p_and_q);
+void intwise_encrypt(uint32_t *message_n);
+void intwise_decrypt(uint32_t *cypher_n_d);
+void set_fd();
+void print_128_bit_integer(uint32_t *input_x);
+void read_segment(uint32_t *bit_output);
 
 #endif

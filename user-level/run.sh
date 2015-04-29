@@ -1,6 +1,6 @@
 #! /bin/bash
 rmmod rsa_box
-make
+make "wrapper-test"
 insmod rsa_box.ko
 clear
-./hello
+./wrapper-test
