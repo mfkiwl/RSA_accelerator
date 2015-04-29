@@ -37,7 +37,7 @@ void set_fd()
     if ( (rsa_box_fd = open(filename, O_RDWR)) == -1)
     {
         fprintf(stderr, "could not open %s\n", filename);
-    } 
+    }
 }
 
 void store_private_keys(uint32_t *p_and_q)
@@ -50,7 +50,7 @@ void store_private_keys(uint32_t *p_and_q)
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
-        perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
     for(i = 0; i < ADDR_SIZE_MAKE_KEY ;i++){

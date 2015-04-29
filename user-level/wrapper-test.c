@@ -26,15 +26,10 @@ int main()
     uint32_t input_x_n[4]; 
     uint32_t return_x[4]; 
     
-    static const char filename[] = "/dev/rsa_box";
-
     printf("RSA Box device driver started\n");
 
-    if ( (rsa_box_fd = open(filename, O_RDWR)) == -1)
-    {
-        fprintf(stderr, "could not open %s\n", filename);
-        return -1;
-    } 
+    // make sure each function can access hardware file descriptor 
+    set_fd();
     
     // [setting] message to decrypt
     for(i = 0; i < 12; i++)
