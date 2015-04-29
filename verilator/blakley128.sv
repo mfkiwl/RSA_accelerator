@@ -1,14 +1,20 @@
 /* verilator lint_off WIDTH */
 /* verilator lint_off UNUSED */
-module blakley128(input logic clk,input logic reset_l, input logic[127:0] a, input logic[127:0] b, input logic[127:0] n,  output logic[127:0] out_number, output logic ready); 
+module blakley128(input logic   clk,
+        input logic             reset_l, 
+        input logic[127:0]      a, 
+        input logic[127:0]      b, 
+        input logic[127:0]      n, 
+        output logic[127:0]     out_number, 
+        output logic            ready); 
 
-logic fun;
-logic [9:0] count;
-logic inputToFunctionR;
-logic [127:0] r; 
-logic [127:0] previousR; 
-logic subModuleReady;
-logic [1:0] step; 
+logic fun;              /* function choice: 0 while computing, 1 upon completion. */
+logic [9:0] bitNum;     /* which bit we're at. On 129th inc, we're done. */
+logic inputToFunctionR; /* */
+logic [127:0] r;        /* current value of remainder. is updated on each loop iteration */
+logic [127:0] previousR;/* */
+logic subModuleReady;   /* */
+logic [1:0] step;       /* step number we're at */ 
 
 logic [127:0] n1; 
 logic [127:0] n2; 
@@ -22,7 +28,7 @@ begin
     if(reset_l) begin
         out_number[127:0] <= 5'd1; 
         fun <= 1'b0;
-        count[9:0]  <= 9'd0;
+        bitNum[9:0]  <= 9'd0;
         r <= 5'd0;
         subModuleReady <= 1'b1;
         ready <= 1'b0; 
@@ -40,13 +46,13 @@ begin
 
         case(fun) 
             1'b0: begin
-                case(count)
+                case(bitNum)
                     9'd0: begin 
                         if(subModuleReady && !ready) begin 
                             inputToFunctionR <= a[127]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd1: begin 
@@ -54,7 +60,7 @@ begin
                             inputToFunctionR <= a[126]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd2: begin 
@@ -62,7 +68,7 @@ begin
                             inputToFunctionR <= a[125]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd3: begin 
@@ -70,7 +76,7 @@ begin
                             inputToFunctionR <= a[124]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd4: begin 
@@ -78,7 +84,7 @@ begin
                             inputToFunctionR <= a[123]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd5: begin 
@@ -86,7 +92,7 @@ begin
                             inputToFunctionR <= a[122]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd6: begin 
@@ -94,7 +100,7 @@ begin
                             inputToFunctionR <= a[121]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd7: begin 
@@ -102,7 +108,7 @@ begin
                             inputToFunctionR <= a[120]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd8: begin 
@@ -110,7 +116,7 @@ begin
                             inputToFunctionR <= a[119]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd9: begin 
@@ -118,7 +124,7 @@ begin
                             inputToFunctionR <= a[118]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd10: begin 
@@ -126,7 +132,7 @@ begin
                             inputToFunctionR <= a[117]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd11: begin 
@@ -134,7 +140,7 @@ begin
                             inputToFunctionR <= a[116]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd12: begin 
@@ -142,7 +148,7 @@ begin
                             inputToFunctionR <= a[115]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd13: begin 
@@ -150,7 +156,7 @@ begin
                             inputToFunctionR <= a[114]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd14: begin 
@@ -158,7 +164,7 @@ begin
                             inputToFunctionR <= a[113]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd15: begin 
@@ -166,7 +172,7 @@ begin
                             inputToFunctionR <= a[112]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd16: begin 
@@ -174,7 +180,7 @@ begin
                             inputToFunctionR <= a[111]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd17: begin 
@@ -182,7 +188,7 @@ begin
                             inputToFunctionR <= a[110]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd18: begin 
@@ -190,15 +196,15 @@ begin
                             inputToFunctionR <= a[109]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd19: begin 
-                        if(subModuleReady && !ready) begin 
+                        if(subModuleReady && !ready) begin
                             inputToFunctionR <= a[108]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd20: begin 
@@ -206,7 +212,7 @@ begin
                             inputToFunctionR <= a[107]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd21: begin 
@@ -214,7 +220,7 @@ begin
                             inputToFunctionR <= a[106]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd22: begin 
@@ -222,7 +228,7 @@ begin
                             inputToFunctionR <= a[105]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd23: begin 
@@ -230,7 +236,7 @@ begin
                             inputToFunctionR <= a[104]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd24: begin 
@@ -238,7 +244,7 @@ begin
                             inputToFunctionR <= a[103]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd25: begin 
@@ -246,7 +252,7 @@ begin
                             inputToFunctionR <= a[102]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd26: begin 
@@ -254,7 +260,7 @@ begin
                             inputToFunctionR <= a[101]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd27: begin 
@@ -262,7 +268,7 @@ begin
                             inputToFunctionR <= a[100]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd28: begin 
@@ -270,7 +276,7 @@ begin
                             inputToFunctionR <= a[99]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd29: begin 
@@ -278,7 +284,7 @@ begin
                             inputToFunctionR <= a[98]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd30: begin 
@@ -286,7 +292,7 @@ begin
                             inputToFunctionR <= a[97]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd31: begin 
@@ -294,7 +300,7 @@ begin
                             inputToFunctionR <= a[96]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd32: begin 
@@ -302,7 +308,7 @@ begin
                             inputToFunctionR <= a[95]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd33: begin 
@@ -310,7 +316,7 @@ begin
                             inputToFunctionR <= a[94]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd34: begin 
@@ -318,7 +324,7 @@ begin
                             inputToFunctionR <= a[93]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd35: begin 
@@ -326,7 +332,7 @@ begin
                             inputToFunctionR <= a[92]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd36: begin 
@@ -334,7 +340,7 @@ begin
                             inputToFunctionR <= a[91]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd37: begin 
@@ -342,7 +348,7 @@ begin
                             inputToFunctionR <= a[90]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd38: begin 
@@ -350,7 +356,7 @@ begin
                             inputToFunctionR <= a[89]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd39: begin 
@@ -358,7 +364,7 @@ begin
                             inputToFunctionR <= a[88]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd40: begin 
@@ -366,7 +372,7 @@ begin
                             inputToFunctionR <= a[87]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd41: begin 
@@ -374,7 +380,7 @@ begin
                             inputToFunctionR <= a[86]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd42: begin 
@@ -382,7 +388,7 @@ begin
                             inputToFunctionR <= a[85]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd43: begin 
@@ -390,7 +396,7 @@ begin
                             inputToFunctionR <= a[84]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd44: begin 
@@ -398,7 +404,7 @@ begin
                             inputToFunctionR <= a[83]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd45: begin 
@@ -406,7 +412,7 @@ begin
                             inputToFunctionR <= a[82]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd46: begin 
@@ -414,7 +420,7 @@ begin
                             inputToFunctionR <= a[81]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd47: begin 
@@ -422,7 +428,7 @@ begin
                             inputToFunctionR <= a[80]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd48: begin 
@@ -430,7 +436,7 @@ begin
                             inputToFunctionR <= a[79]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd49: begin 
@@ -438,7 +444,7 @@ begin
                             inputToFunctionR <= a[78]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd50: begin 
@@ -446,7 +452,7 @@ begin
                             inputToFunctionR <= a[77]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd51: begin 
@@ -454,7 +460,7 @@ begin
                             inputToFunctionR <= a[76]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd52: begin 
@@ -462,7 +468,7 @@ begin
                             inputToFunctionR <= a[75]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd53: begin 
@@ -470,7 +476,7 @@ begin
                             inputToFunctionR <= a[74]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd54: begin 
@@ -478,7 +484,7 @@ begin
                             inputToFunctionR <= a[73]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd55: begin 
@@ -486,7 +492,7 @@ begin
                             inputToFunctionR <= a[72]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd56: begin 
@@ -494,7 +500,7 @@ begin
                             inputToFunctionR <= a[71]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd57: begin 
@@ -502,7 +508,7 @@ begin
                             inputToFunctionR <= a[70]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd58: begin 
@@ -510,7 +516,7 @@ begin
                             inputToFunctionR <= a[69]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd59: begin 
@@ -518,7 +524,7 @@ begin
                             inputToFunctionR <= a[68]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd60: begin 
@@ -526,7 +532,7 @@ begin
                             inputToFunctionR <= a[67]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd61: begin 
@@ -534,7 +540,7 @@ begin
                             inputToFunctionR <= a[66]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd62: begin 
@@ -542,7 +548,7 @@ begin
                             inputToFunctionR <= a[65]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd63: begin 
@@ -550,7 +556,7 @@ begin
                             inputToFunctionR <= a[64]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd64: begin 
@@ -558,7 +564,7 @@ begin
                             inputToFunctionR <= a[63]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd65: begin 
@@ -566,7 +572,7 @@ begin
                             inputToFunctionR <= a[62]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd66: begin 
@@ -574,7 +580,7 @@ begin
                             inputToFunctionR <= a[61]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd67: begin 
@@ -582,7 +588,7 @@ begin
                             inputToFunctionR <= a[60]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd68: begin 
@@ -590,7 +596,7 @@ begin
                             inputToFunctionR <= a[59]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd69: begin 
@@ -598,7 +604,7 @@ begin
                             inputToFunctionR <= a[58]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd70: begin 
@@ -606,7 +612,7 @@ begin
                             inputToFunctionR <= a[57]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd71: begin 
@@ -614,7 +620,7 @@ begin
                             inputToFunctionR <= a[56]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd72: begin 
@@ -622,7 +628,7 @@ begin
                             inputToFunctionR <= a[55]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd73: begin 
@@ -630,7 +636,7 @@ begin
                             inputToFunctionR <= a[54]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd74: begin 
@@ -638,7 +644,7 @@ begin
                             inputToFunctionR <= a[53]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd75: begin 
@@ -646,7 +652,7 @@ begin
                             inputToFunctionR <= a[52]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd76: begin 
@@ -654,7 +660,7 @@ begin
                             inputToFunctionR <= a[51]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd77: begin 
@@ -662,7 +668,7 @@ begin
                             inputToFunctionR <= a[50]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd78: begin 
@@ -670,7 +676,7 @@ begin
                             inputToFunctionR <= a[49]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd79: begin 
@@ -678,7 +684,7 @@ begin
                             inputToFunctionR <= a[48]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd80: begin 
@@ -686,7 +692,7 @@ begin
                             inputToFunctionR <= a[47]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd81: begin 
@@ -694,7 +700,7 @@ begin
                             inputToFunctionR <= a[46]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd82: begin 
@@ -702,7 +708,7 @@ begin
                             inputToFunctionR <= a[45]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd83: begin 
@@ -710,7 +716,7 @@ begin
                             inputToFunctionR <= a[44]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd84: begin 
@@ -718,7 +724,7 @@ begin
                             inputToFunctionR <= a[43]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd85: begin 
@@ -726,7 +732,7 @@ begin
                             inputToFunctionR <= a[42]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd86: begin 
@@ -734,7 +740,7 @@ begin
                             inputToFunctionR <= a[41]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd87: begin 
@@ -742,7 +748,7 @@ begin
                             inputToFunctionR <= a[40]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd88: begin 
@@ -750,7 +756,7 @@ begin
                             inputToFunctionR <= a[39]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd89: begin 
@@ -758,7 +764,7 @@ begin
                             inputToFunctionR <= a[38]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd90: begin 
@@ -766,7 +772,7 @@ begin
                             inputToFunctionR <= a[37]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd91: begin 
@@ -774,7 +780,7 @@ begin
                             inputToFunctionR <= a[36]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd92: begin 
@@ -782,7 +788,7 @@ begin
                             inputToFunctionR <= a[35]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd93: begin 
@@ -790,7 +796,7 @@ begin
                             inputToFunctionR <= a[34]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd94: begin 
@@ -798,7 +804,7 @@ begin
                             inputToFunctionR <= a[33]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd95: begin 
@@ -806,7 +812,7 @@ begin
                             inputToFunctionR <= a[32]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd96: begin 
@@ -814,7 +820,7 @@ begin
                             inputToFunctionR <= a[31]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd97: begin 
@@ -822,7 +828,7 @@ begin
                             inputToFunctionR <= a[30]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd98: begin 
@@ -830,7 +836,7 @@ begin
                             inputToFunctionR <= a[29]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd99: begin 
@@ -838,7 +844,7 @@ begin
                             inputToFunctionR <= a[28]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd100: begin 
@@ -846,7 +852,7 @@ begin
                             inputToFunctionR <= a[27]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd101: begin 
@@ -854,7 +860,7 @@ begin
                             inputToFunctionR <= a[26]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd102: begin 
@@ -862,7 +868,7 @@ begin
                             inputToFunctionR <= a[25]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd103: begin 
@@ -870,7 +876,7 @@ begin
                             inputToFunctionR <= a[24]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd104: begin 
@@ -878,7 +884,7 @@ begin
                             inputToFunctionR <= a[23]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd105: begin 
@@ -886,7 +892,7 @@ begin
                             inputToFunctionR <= a[22]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd106: begin 
@@ -894,7 +900,7 @@ begin
                             inputToFunctionR <= a[21]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd107: begin 
@@ -902,7 +908,7 @@ begin
                             inputToFunctionR <= a[20]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd108: begin 
@@ -910,7 +916,7 @@ begin
                             inputToFunctionR <= a[19]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd109: begin 
@@ -918,7 +924,7 @@ begin
                             inputToFunctionR <= a[18]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd110: begin 
@@ -926,7 +932,7 @@ begin
                             inputToFunctionR <= a[17]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd111: begin 
@@ -934,7 +940,7 @@ begin
                             inputToFunctionR <= a[16]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd112: begin 
@@ -942,7 +948,7 @@ begin
                             inputToFunctionR <= a[15]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd113: begin 
@@ -950,7 +956,7 @@ begin
                             inputToFunctionR <= a[14]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd114: begin 
@@ -958,7 +964,7 @@ begin
                             inputToFunctionR <= a[13]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd115: begin 
@@ -966,7 +972,7 @@ begin
                             inputToFunctionR <= a[12]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd116: begin 
@@ -974,7 +980,7 @@ begin
                             inputToFunctionR <= a[11]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd117: begin 
@@ -982,7 +988,7 @@ begin
                             inputToFunctionR <= a[10]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd118: begin 
@@ -990,7 +996,7 @@ begin
                             inputToFunctionR <= a[9]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd119: begin 
@@ -998,7 +1004,7 @@ begin
                             inputToFunctionR <= a[8]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd120: begin 
@@ -1006,7 +1012,7 @@ begin
                             inputToFunctionR <= a[7]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd121: begin 
@@ -1014,7 +1020,7 @@ begin
                             inputToFunctionR <= a[6]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd122: begin 
@@ -1022,7 +1028,7 @@ begin
                             inputToFunctionR <= a[5]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd123: begin 
@@ -1030,7 +1036,7 @@ begin
                             inputToFunctionR <= a[4]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd124: begin 
@@ -1038,7 +1044,7 @@ begin
                             inputToFunctionR <= a[3]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd125: begin 
@@ -1046,7 +1052,7 @@ begin
                             inputToFunctionR <= a[2]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd126: begin 
@@ -1054,7 +1060,7 @@ begin
                             inputToFunctionR <= a[1]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd127: begin 
@@ -1062,21 +1068,23 @@ begin
                             inputToFunctionR <= a[0]; 
                             fun <= 1'b1; 
                             subModuleReady <= 1'b0; 
-                            count[9:0] <= count[9:0] + 9'd1;
+                            bitNum[9:0] <= bitNum[9:0] + 9'd1;
                         end 
                     end 
                     9'd128: begin 
                         if(subModuleReady) begin 
                             out_number[127:0] <= r[127:0]; 
-                            ready <= 1'b1;
+                            ready <= 1'b1; // we're done
                         end 
                     end 
                     default: begin
                     end
                 endcase
             end
+            // this is the submodule
             1'b1: begin
                 case(step)
+                    // step 1
                     2'b00: begin
                         case(inputToFunctionR)
                             1'b0: begin
@@ -1089,11 +1097,13 @@ begin
                             end
                         endcase
                     end
+                    // step 2
                     2'b01: begin
                         nMinusOne[127:0] <= r[127:0] - n1[127:0];
                         nMinusTwo[127:0] <= r[127:0] - n2[127:0];                         
                         step <= 2'b10; 
                     end
+                    // step 3
                     2'b10:begin
                         if(r[127:0] < n[127:0]) begin
                             fun <= 1'b0;
@@ -1119,4 +1129,3 @@ begin
     end
 end
 endmodule
-
