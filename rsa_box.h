@@ -2,7 +2,7 @@
 #define _RSA_BOX_H
 
 #include <linux/ioctl.h>
-#include <stdint.h>     /* for unit32_t */
+#include <linux/types.h>     /* for unit32_t */
 
 typedef struct {
   int digit;

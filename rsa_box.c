@@ -35,6 +35,7 @@
 #include <linux/fs.h>	/* struct file_operations */
 #include <linux/uaccess.h>
 #include "rsa_box.h"
+#include <linux/types.h>
 
 #define DRIVER_NAME "rsa_box"
 

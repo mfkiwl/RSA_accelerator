@@ -37,7 +37,7 @@ void set_fd()
     if ( (rsa_box_fd = open(filename, O_RDWR)) == -1)
     {
         fprintf(stderr, "could not open %s\n", filename);
-    } 
+    }
 }
 
 void store_private_keys(int32_t *p_and_q)
@@ -50,7 +50,7 @@ void store_private_keys(int32_t *p_and_q)
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
-        perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
     for(i = 0; i < ADDR_SIZE_MAKE_KEY ;i++){
@@ -61,7 +61,7 @@ void store_private_keys(int32_t *p_and_q)
 
     	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
-      	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
     }
 }
@@ -76,7 +76,7 @@ void intwise_encrypt(int32_t *message_n)
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
-        perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
     for(i = 0; i < ADDR_SIZE_ENCRYPT; i++){
@@ -87,7 +87,7 @@ void intwise_encrypt(int32_t *message_n)
 
     	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
-      	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
     }
     // int32_t e = 65537; 
@@ -105,7 +105,7 @@ void intwise_decrypt(int32_t *cypher_n_d)
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
-        perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
     for(i = 0; i < ADDR_SIZE_DECRYPT ; i++)
@@ -117,7 +117,7 @@ void intwise_decrypt(int32_t *cypher_n_d)
 
     	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
-      	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
     }
 
@@ -126,7 +126,7 @@ void intwise_decrypt(int32_t *cypher_n_d)
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
-        perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
     for(i = 0; i < ADDR_SIZE_DECRYPT; i++)
@@ -140,7 +140,7 @@ void intwise_decrypt(int32_t *cypher_n_d)
 
     	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
-      	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
+      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
     }
 
