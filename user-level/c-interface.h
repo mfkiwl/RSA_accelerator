@@ -5,14 +5,14 @@
 
 // Start session.
 // Use user-specified private key, return public key.
-void RSA_init(uint32_t *p, uint32_t *q); 
+void RSA_init(int32_t *p, int32_t *q); 
 
 // Start session. 
 // Use auto-generated private key, return public key.
 //void *RSA_init();
 
 // Save remote public keys to register.
-void set_remote_keys(uint32_t *e_other, uint32_t *n_other);
+void set_remote_keys(int32_t *e_other, int32_t *n_other);
 
 // Encryption and decryption using values stored in registers.
 // Raise exception and set errno if relevant register not set.

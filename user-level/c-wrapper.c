@@ -40,7 +40,7 @@ void set_fd()
     } 
 }
 
-void store_private_keys(uint32_t *p_and_q)
+void store_private_keys(int32_t *p_and_q)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
@@ -66,7 +66,7 @@ void store_private_keys(uint32_t *p_and_q)
     }
 }
 
-void intwise_encrypt(uint32_t *message_n)
+void intwise_encrypt(int32_t *message_n)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
@@ -90,12 +90,12 @@ void intwise_encrypt(uint32_t *message_n)
       	    perror("ioctl(VGA_LED_WRITE_DIGIT) failed");
     	}
     }
-    // uint32_t e = 65537; 
+    // int32_t e = 65537; 
     
 }
 
 /* sends decrypt instruction to hardware. */
-void intwise_decrypt(uint32_t *cypher_n_d)
+void intwise_decrypt(int32_t *cypher_n_d)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
@@ -170,7 +170,7 @@ void intwise_decrypt(uint32_t *cypher_n_d)
 }
 
 // read 128 bit from kernel space into user space and store in [bit_output]
-void read_segment(uint32_t *bit_output)
+void read_segment(int32_t *bit_output)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
@@ -189,7 +189,7 @@ void read_segment(uint32_t *bit_output)
 }
 
 // print out 128 bit int, but by [sections]
-void print_128_bit_integer(uint32_t *input_x)
+void print_128_bit_integer(int32_t *input_x)
 {
    int i;  
    

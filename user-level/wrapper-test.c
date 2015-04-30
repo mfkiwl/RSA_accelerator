@@ -21,10 +21,10 @@ int main()
      */
 
     int i; 
-    uint32_t input_x_decrypt[12];
-    uint32_t input_x_encrypt[5]; 
-    uint32_t input_x_n[4]; 
-    uint32_t return_x[4]; 
+    int32_t input_x_decrypt[12];
+    int32_t input_x_encrypt[5]; 
+    int32_t input_x_n[4]; 
+    int32_t return_x[4]; 
     
     static const char filename[] = "/dev/rsa_box";
 
