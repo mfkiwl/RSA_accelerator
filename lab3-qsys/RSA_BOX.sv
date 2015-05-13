@@ -32,15 +32,15 @@ module RSA_BOX(input logic      clk,
     // ALU alu_input( .*  );
 
     always_ff @(posedge clk) begin
-        if (reset || (address == 3'b000 && instrBits == 1'b1)) begin
+        if (reset || (address == 3'b000 && instrBits[31:0] == 1'b1)) begin
             /* reset triggered when clock starts */
-            data_out <= 		32'd0; 
-            instrBits <= 		32'd0;     // reset typeof(instr)
-				p <=					64'd0;
-				q <=					64'd0;
-				n <=					128'd0;
-				e <=					32'd0;
-            functionCall <= 	2'd0; 
+            data_out[31:0] 	<= 		32'd0; 
+            instrBits[31:0] 	<= 		32'd0;     // reset typeof(instr)
+				p[63:0] 				<=			64'd0;
+				q[63:0] 				<=			64'd0;
+				n[127:0] 			<=			128'd0;
+				e[31:0] 				<=			32'd0;
+            functionCall[1:0] <= 		2'd0; 
         end
 
 		  /* reading */
@@ -55,7 +55,7 @@ module RSA_BOX(input logic      clk,
 		  
 		  /* writing */                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
         else if (chipselect && write) begin
-				/* determine what kind of instruction this is */
+				/* set what kind of instruction this is */
             if (address == 3'b000) begin
                 instrBits[31:0] <= data_in[31:0];
             end
