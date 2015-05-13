@@ -7,10 +7,13 @@
  */
 #define INSTRUCTION             0
 #define RESET                   1
-#define STORE_PUBLIC_KEYS       2
-#define ENCRYPT_BITS            10
-#define STORE_PRIVATE_KEY_1     3 // DECRYPT_1
-#define STORE_PRIVATE_KEY_2     7 // DECRYPT_2
-#define DECRYPT_BITS            11 // DECRYPT_3
+#define STORE_PUBLIC_KEY_1      2 // n
+#define STORE_PUBLIC_KEY_2      3 // e
+#define STORE_PRIVATE_KEY_1     4 // p
+#define STORE_PRIVATE_KEY_2     5 // q
+#define DECRYPT_BITS            6 // DECRYPT_3
+#define ENCRYPT_BITS            7
+#define READ_PUBLIC_KEY_1       8 // n
+#define READ_PUBLIC_KEY_2       9 // e
 
 #endif
