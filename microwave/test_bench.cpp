@@ -2,7 +2,7 @@
 #include "VincrementA.h"
 #include <iostream>
 #include "verilated_vcd_c.h"
-#define MAXTIME 10000 
+#define MAXTIME 100 
 
 using namespace std; 
 
@@ -48,6 +48,7 @@ int main(int argc, char **argv, char **env){
     //initialize reset to true, as well as pass in a and b values
     top->reset = 1; 
     top->clk = 0; 
+    top->a = 15; 
     while(!Verilated::gotFinish()){    
         tfp->dump(main_time);
         toggle(top);
