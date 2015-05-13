@@ -19,6 +19,8 @@
 #include "instructions.h"
 #include "c-wrapper.h"
 
+void read_segment(int32_t *bit_output, int size);
+
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
 static int BIT_SEGMENTS_READ[4] = {0, 1, 2, 3};
@@ -93,12 +95,16 @@ void store_keys(int type, int32_t *key_1, int32_t *key_2)
     
     if (type == PUBLIC)
     {
-        send_instruction(STORE_PUBLIC_KEYS);
+        send_instruction(STORE_PUBLIC_KEY_1);
         send_bits(key_1, 4); // n
+        send_instruction(STORE_PUBLIC_KEY_2);
         send_bits(key_2, 1); // e
     }
 }
 
+/*
+ * Send data to encrypt/decrypt to device.
+ */
 void send_int_encrypt_decrypt(int action, int32_t *input)
 {
     if (action == ENCRYPT_SEND)
@@ -112,6 +118,19 @@ void send_int_encrypt_decrypt(int action, int32_t *input)
         send_instruction(DECRYPT_BITS);
         send_bits(input, 4);
     }
+}
+
+/*
+ * Return the public keys on this device.
+ *
+ * (Note: the interface to read private keys was intentionally ommitted.
+ */
+void __read_public_keys(int32_t *key_1, int32_t *key_2)
+{
+    send_instruction(READ_PUBLIC_KEY_1);
+    read_segment(key_1, 4);
+    send_instruction(READ_PUBLIC_KEY_2);
+    read_segment(key_2, 1);
 }
 
 void read_segment(int32_t *bit_output, int size)

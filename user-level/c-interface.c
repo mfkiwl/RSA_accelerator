@@ -18,6 +18,11 @@ void set_public_keys(int32_t *e, int32_t *n)
     store_keys(PUBLIC, e, n);
 }
 
+void read_public_keys(int32_t *e, int32_t *n)
+{
+    __read_public_keys(e, n);
+}
+
 /*
  * encrypt message and return as 32-bit int array.
  */

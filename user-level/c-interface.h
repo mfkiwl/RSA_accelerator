@@ -9,6 +9,7 @@
  */
 void set_private_keys(int32_t *p, int32_t *q);
 void set_public_keys(int32_t *e, int32_t *n);
+void __read_public_keys(int32_t *e, int32_t *n);
 
 // Encryption and decryption using values stored in registers.
 // Raise exception and set errno if relevant register not set.
