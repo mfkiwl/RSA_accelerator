@@ -42,7 +42,8 @@ void set_fd()
 void send_instruction(int operation)
 {
     rsa_box_arg_t rsa_userspace_vals;
-
+    int empty[4]; 
+    int i; 
     if (rsa_box_fd == -1)
         set_fd();
 
@@ -56,6 +57,13 @@ void send_instruction(int operation)
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
+    }
+
+    if(operation == READ_PUBLIC_KEY_1){
+        for(i=0; i<4; i++){
+                empty[4] = READ_PUBLIC_KEY_1; 
+        }
+        send_bits(empty, 4); 
     }
 }
 
