@@ -50,9 +50,9 @@ int main(int argc, char **argv, char **env){
     //initialize reset to true, as well as pass in a and b values
     top->reset = 1;
 
-    a = 222; 
-    b = 125; 
-    n = 19; 
+    a = 1533; 
+    b = 23777; 
+    n = 25782;; 
     int ans = ( (a*b)%n );  
     top->clk = 0; 
     top->a[0] = a; 

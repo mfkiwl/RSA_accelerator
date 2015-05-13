@@ -25,7 +25,7 @@ always_ff @(posedge clk)
 begin
     if(reset)
     begin
-        counter[8:0] <= 9'd127;
+        counter[8:0] <= 9'd128;
 
         r[127:0] <= 6'd0; 
         a_and_zero[127:0] <= 9'd0; 
@@ -48,13 +48,13 @@ begin
         b_minus_two_n[127:0] <= b[127:0] - twoN[127:0];
         case(fun)
             1'b0: begin
-                if($signed(counter) == -2'd1) begin
+                if($signed(counter) == -9'd1) begin
                     outputAnswer[127:0] <= r[127:0];  
                     ready <= 1'b1; 
                 end
                 else begin
                     out <= a[counter];
-                    a_and_zero[8:0] <= (twoR[127:0] + b[127:0] ); 
+                    a_and_zero[127:0] <= (twoR[127:0] + b[127:0] ); 
                     not_a_and_zero[127:0] <= (twoR[127:0]); 
                     a_and_n[127:0] <= (twoR[127:0] + b_minus_n[127:0]); 
                     not_a_and_n[127:0] <= (twoR[127:0] - n[127:0]); 
@@ -64,7 +64,7 @@ begin
                 end
             end
             1'b1: begin
-                if($signed(counter) >= 8'd0) begin
+                if($signed(counter) >= 9'd0) begin
                     counter <= $signed(counter) - 1'b1;
                     fun <= 1'b0; 
                     case(out)
