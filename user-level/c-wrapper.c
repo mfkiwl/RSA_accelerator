@@ -24,7 +24,7 @@ void read_segment(int32_t *bit_output, int size);
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
 static int BIT_SEGMENTS_READ[4] = {0, 1, 2, 3};
-static int rsa_box_fd;
+static int rsa_box_fd = -1;
 
 void set_fd()
 {
@@ -43,10 +43,15 @@ void send_instruction(int operation)
 {
     rsa_box_arg_t rsa_userspace_vals;
 
+    if (rsa_box_fd == -1)
+        set_fd();
+
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments = operation;
 
+#ifdef PRINTVERBOSE
     printf("[instruction] calling %d\n", operation);
+#endif
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
@@ -64,12 +69,17 @@ void send_bits(int32_t *value, int count)
     rsa_box_arg_t rsa_userspace_vals;
     int i;
     
+    if (rsa_box_fd == -1)
+        set_fd();
+
     for (i = 0; i < count; i++)
     {
         rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
         rsa_userspace_vals.segments =  value[i];
 
+#ifdef PRINTVERBOSE
         printf("[sending] %d // %d\n", BIT_SEGMENTS[i], value[i]); 
+#endif
 
         if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
@@ -138,6 +148,9 @@ void read_segment(int32_t *bit_output, int size)
     rsa_box_arg_t rsa_userspace_vals;
     int i;
 
+    if (rsa_box_fd == -1)
+        set_fd();
+
     for (i = 0; i < size; i++)
     {
         rsa_userspace_vals.digit = BIT_SEGMENTS_READ[i];
@@ -148,6 +161,10 @@ void read_segment(int32_t *bit_output, int size)
         }
 
         bit_output[i] = rsa_userspace_vals.segments; 
+        
+#ifdef PRINTVERBOSE
+        printf("[reading] %d // %d\n", i, bit_output[i]);
+#endif
     }
 }
 
