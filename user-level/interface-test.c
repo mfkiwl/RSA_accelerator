@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     q[0] = 39;
     q[1] = 5000;
 
-    RSA_init(p, q);
+    set_private_keys(p, q);
 
     return 0;
 }

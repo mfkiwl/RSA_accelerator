@@ -6,10 +6,11 @@
  * write INSTRUCTION with desired action (e.g. MAKE_KEY, ENCRYPT, etc)
  */
 #define INSTRUCTION 0
-#define MAKE_KEY 1
-#define ENCRYPT 2
-#define DECRYPT_1 3
-#define DECRYPT_2 7
-#define DECRYPT_3 11
+#define STORE_PUBLIC_KEYS 1
+#define STORE_PRIVATE_KEYS 1
+#define ENCRYPT_BITS 2
+#define STORE_PRIVATE_KEY_1 3 // DECRYPT_1
+#define STORE_PRIVATE_KEY_2 7 // DECRYPT_2
+#define DECRYPT_BITS 11 // DECRYPT_3
 
 #endif
