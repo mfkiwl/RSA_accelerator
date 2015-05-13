@@ -13,12 +13,12 @@ unsigned long long rdtsc(){
     return ((unsigned long long)hi << 32) | lo;
 }
 
-/* modular exponentiation */
+/* modular exponentiation (base ^ exponent % mod) */
 uint64_t modulo(uint64_t base, uint64_t exponent, uint64_t mod) {
     uint64_t x = 1; uint64_t y = base;
     
     while (exponent > 0) {
-        if (exponent % 2 == 1)
+        if (exponent % 2 == 1) // odd exponents
             x = (x * y) % mod;
         y = (y * y) % mod;
         exponent = exponent / 2;
@@ -54,38 +54,24 @@ int miller(uint64_t p, int iteration) {
 
 uint64_t get_random(int tries) {
 	
-	uint64_t maxval = RAND_MAX;
-
-	double num1 = rand();
-	double num2 = rand();
-
-	// printf("[before convert] num1: %d, num2: %d\n", rand(), rand());
-
-	uint64_t r30 = (uint64_t)num1;	// top 30
-	uint64_t s30 = (uint64_t)num2; 	// middle 30
-	uint64_t t4  = rand() & 0xf; 				// bottom 4
+	uint64_t r30 = (uint64_t)rand();	// top 30
+	uint64_t s30 = (uint64_t)rand(); 	// middle 30
+	uint64_t t4  = rand() & 0xf; 		// bottom 4
 
 	uint64_t res = (r30 << 34) + (s30 << 4) + t4;
-
-	// printf("[components] r30: %" PRIu64 ", s30: %" PRIu64 ", and t4: %" PRIu64 "\n", r30, s30, t4);
-	// printf("initial random: %" PRIu64 ", and tries: %d \n", res, tries);
 
 	while(tries > 0) {
 		res >>= 1;
 		tries--;
 	}
 
-	// printf("%" PRIu64 "\n", res);
 	return res;
 }
 
 uint64_t generate_prime() {
 	
 	int iteration = 5;
-	int is_prime = 0;
-	int tries = 0; /* linear backoff */
-
-	uint64_t prime;
+	int tries = 0; /* LINEAR BACKOFF */
 
 	srand(rdtsc()); // randomize seed
 
