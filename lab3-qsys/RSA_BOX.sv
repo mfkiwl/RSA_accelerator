@@ -88,8 +88,8 @@ module RSA_BOX(input logic      clk,
 				/* STORE_PRIVATE_KEY_2: q */
             else if (instrBits == 4'd5) begin
 					case(address)
-						3'b001: q[159:128] <= data_in[31:0];
-						3'b010: q[191:160] <= data_in[31:0];
+						3'b001: q[31:0] <= data_in[31:0];
+						3'b010: q[63:32] <= data_in[31:0];
                endcase
             end
 
