@@ -40,6 +40,39 @@ void set_fd()
     }
 }
 
+/* // TODO
+void send_op_to_hardware(int operation, int32_t *value)
+{
+    rsa_box_arg_t rsa_userspace_vals;
+    int i;
+
+    rsa_userspace_vals.digit =  INSTRUCTION;
+    rsa_userspace_vals.segments = operation;
+
+    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    {
+        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
+    }
+
+    int addr_size;
+    
+
+    for (i = 0; i < ADDR_SIZE_MAKE_KEY; i++) 
+    {
+    	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
+    	rsa_userspace_vals.segments =  p_and_q[i];
+
+	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], p_and_q[i]); 
+
+    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+        {
+      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
+    	}
+    }
+
+}
+*/
+
 void store_private_keys(int32_t *p_and_q)
 {
     rsa_box_arg_t rsa_userspace_vals;
@@ -53,7 +86,8 @@ void store_private_keys(int32_t *p_and_q)
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
-    for(i = 0; i < ADDR_SIZE_MAKE_KEY ;i++){
+    for (i = 0; i < ADDR_SIZE_MAKE_KEY; i++) 
+    {
     	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
     	rsa_userspace_vals.segments =  p_and_q[i];
 
@@ -79,7 +113,7 @@ void intwise_encrypt(int32_t *message_n)
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
-    for(i = 0; i < ADDR_SIZE_ENCRYPT; i++){
+    for (i = 0; i < ADDR_SIZE_ENCRYPT; i++) {
     	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
     	rsa_userspace_vals.segments =  message_n[i];
 
@@ -90,17 +124,16 @@ void intwise_encrypt(int32_t *message_n)
       	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
     }
-    // int32_t e = 65537; 
-    
 }
 
-/* sends decrypt instruction to hardware. */
-void intwise_decrypt(int32_t *cypher_n_d)
+
+/* store public keys to be used for decryption. */
+void store_public_keys(int32_t *n, int32_t *d)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
 
-    rsa_userspace_vals.digit =  INSTRUCTION;
+    rsa_userspace_vals.digit = INSTRUCTION;
     rsa_userspace_vals.segments = DECRYPT_1;
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
@@ -108,12 +141,12 @@ void intwise_decrypt(int32_t *cypher_n_d)
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
-    for(i = 0; i < ADDR_SIZE_DECRYPT ; i++)
+    for (i = 0; i < ADDR_SIZE_DECRYPT; i++)
     {
     	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments =  cypher_n_d[i];
+    	rsa_userspace_vals.segments =  n[i];
 
-	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], cypher_n_d[i]); 
+	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], n[i]); 
 
     	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
@@ -121,7 +154,7 @@ void intwise_decrypt(int32_t *cypher_n_d)
     	}
     }
 
-    rsa_userspace_vals.digit =  INSTRUCTION;
+    rsa_userspace_vals.digit = INSTRUCTION;
     rsa_userspace_vals.segments = DECRYPT_2;
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
@@ -129,22 +162,29 @@ void intwise_decrypt(int32_t *cypher_n_d)
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
-    for(i = 0; i < ADDR_SIZE_DECRYPT; i++)
+    for (i = 0; i < ADDR_SIZE_DECRYPT; i++)
     {
     	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments =  cypher_n_d[i+ADDR_SIZE_DECRYPT];
+    	rsa_userspace_vals.segments =  n[i];
 
-	printf("[sending] %d // %d\n", 
-                BIT_SEGMENTS[i], 
-                cypher_n_d[i+ADDR_SIZE_DECRYPT]); 
+	printf("[sending] %d // %d\n",
+                BIT_SEGMENTS[i],
+                n[i]);
 
     	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
       	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     	}
     }
+}
 
+/* sends decrypt instruction to hardware. */
+void intwise_decrypt(int32_t *cypher)
+{
+    rsa_box_arg_t rsa_userspace_vals;
+    int i;
 
+    // send instruction
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments = DECRYPT_3;
 
@@ -153,14 +193,16 @@ void intwise_decrypt(int32_t *cypher_n_d)
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
-    for (i = 0; i < ADDR_SIZE_DECRYPT ;i++)
+    // send actual value
+    for (i = 0; i < ADDR_SIZE_DECRYPT; i++)
     {
     	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments = cypher_n_d[i + 2 * ADDR_SIZE_DECRYPT];
+    	rsa_userspace_vals.segments = 
+                cypher[i];
 
 	printf("[sending] %d // %d\n", 
                 BIT_SEGMENTS[i], 
-                cypher_n_d[i + 2 * ADDR_SIZE_DECRYPT]); 
+                cypher[i]); // cypher[i + 2 * ADDR_SIZE_DECRYPT]); 
 
     	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
@@ -169,13 +211,13 @@ void intwise_decrypt(int32_t *cypher_n_d)
     }
 }
 
-// read 128 bit from kernel space into user space and store in [bit_output]
+/* read 128 bit from kernel space into user space and store in [bit_output] */
 void read_segment(int32_t *bit_output)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
 
-    for(i = 0; i < READ_SIZE_RSA; i++)
+    for (i = 0; i < READ_SIZE_RSA; i++)
     {
     	rsa_userspace_vals.digit = BIT_SEGMENTS_READ[i];
     	

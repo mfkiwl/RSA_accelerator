@@ -1,5 +1,7 @@
 CFLAGS = -g -Wall $(INCLUDES)
 
+default: interface-test wrapper-test
+
 interface-test: c-interface.o c-wrapper.o
 
 wrapper-test: c-wrapper.o

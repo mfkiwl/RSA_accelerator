@@ -21,7 +21,11 @@ int main()
      */
 
     int i; 
-    int32_t input_x_decrypt[12];
+    // for encryption
+    int32_t public_e[4] = {0, 0, 0, 0};
+    int32_t public_n[4] = {0, 0, 0, 0};
+    int32_t message[4] = {1, 0, 1, 0};
+
     int32_t input_x_encrypt[5]; 
     int32_t input_x_n[4]; 
     int32_t return_x[4]; 
@@ -30,25 +34,25 @@ int main()
 
     // make sure each function can access hardware file descriptor 
     set_fd();
-    
-    // [setting] message to decrypt
-    for(i = 0; i < 12; i++)
-    	input_x_decrypt[i] = 1; 
-    
+   
+    /* DECRYPT */ 
+    printf("\n[decrypt...]\n\n");
+    store_public_keys(public_e, public_n); 
+    intwise_encrypt(cypher_text);
+
+    printf("\n[read result...]\n\n"); 
+    read_segment(return_x);
+    print_128_bit_integer(return_x); 
+    /* END DECRYPT */   
+ 
+    return 0;
+
     // [setting] n
     input_x_n[0] = 0;
     input_x_n[1] = 1;
     input_x_n[2] = 0;
     input_x_n[3] = 1;
  
-    // DECRYPT
-    printf("\n[decrypt...]\n\n");
-    intwise_decrypt(input_x_decrypt);
-
-    printf("\n[read result...]\n\n"); 
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-    
     // [setting] message to encrypt
     input_x_encrypt[0] = 5; 
     input_x_encrypt[1] = 5; 
