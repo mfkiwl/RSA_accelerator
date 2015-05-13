@@ -16,21 +16,17 @@
 
     /* instruction bits (can pick from instructions defined in user-level/instructions.h) */
     logic[31:0] instrBits;
-
     /* structures/registers */
     logic[127:0] outputBits; 
+    // private keys
+    logic[63:0] p;
+    logic[63:0] q;
 
-         // private keys
-         logic[63:0] p;
-         logic[63:0] q;
-
-         // public keys
-         logic[127:0] 	n; // p * q
-         logic[31:0]	e;
-
-         /* enabler for ALU */
-         logic[1:0] functionCall; 
-
+    // public keys
+    logic[127:0] 	n; // p * q
+    logic[31:0]	e;
+    /* enabler for ALU */
+    logic[1:0] functionCall; 
     // ALU alu_input( .*  );
 
     always_ff @(posedge clk) begin
@@ -65,55 +61,54 @@
 
             /****** INSTRUCTIONS: check which each instruction *******/ 
             /* STORE_PUBLIC_KEY_1: n */
-            if(instrBits == 4'd2) begin
-                case(address)
-                    3'b001: n[31:0] <= 	data_in[31:0];
-                    3'b010: n[63:32] <= 	data_in[31:0];
-                    3'b011: n[95:64] <= 	data_in[31:0];
-                    3'b100: n[127:96] <= data_in[31:0];
-                    default: begin end
-                endcase
-            end
-
-            /* STORE_PUBLIC_KEY_2: e */
-            else if(instrBits == 4'd3) begin
-                e[31:0] <= 	data_in[31:0];
-                functionCall <= 2'b10; // all data recvd
-            end
-
-            /* STORE_PRIVATE_KEY_1: p */
-            else if (instrBits == 4'd4) begin
-                case(address)
-                    3'b001: p[31:0] <= 	data_in[31:0];
-                    3'b010: p[63:32] <= 	data_in[31:0];
-                    default: begin end
-                endcase
-            end
-
-            /* STORE_PRIVATE_KEY_2: q */
-            else if (instrBits == 4'd5) begin
-                case(address)
-                    3'b001: q[31:0] <= data_in[31:0];
-                    3'b010: q[63:32] <= data_in[31:0];
-                    default: begin end
-                endcase
-            end
-
-            /* READ_PUBLIC_KEY_1: n */
-            else if (instrBits == 5'd8) begin
-                case (address)
-                    3'b001: outputBits[31:0] <= 	n[31:0];
-                    3'b010: outputBits[63:32] <= 	n[63:32];
-                    3'b011: outputBits[95:64] <= 	n[95:64];
-                    3'b100: outputBits[127:96] <=	n[127:96];
-                    default: begin end
-                endcase
-            end
-
-            /* READ_PUBLIC_KEY_2: e */
-            else if (instrBits == 5'd9) begin
-                outputBits[31:0] <= e[31:0];
-            end
+            case(instrBits)
+                32'd2: begin
+                    case(address)
+                        3'b001: n[31:0] <= 	data_in[31:0];
+                        3'b010: n[63:32] <= 	data_in[31:0];
+                        3'b011: n[95:64] <= 	data_in[31:0];
+                        3'b100: n[127:96] <= data_in[31:0];
+                        default: begin end
+                    endcase
+                end
+                32'd3: begin  
+                    /* STORE_PUBLIC_KEY_2: e */
+                    e[31:0] <= 	data_in[31:0];
+                    functionCall <= 2'b10; // all data recvd
+                end
+                32'd4: begin
+                    /* STORE_PRIVATE_KEY_1: p */
+                    case(address)
+                        3'b001: p[31:0] <= 	data_in[31:0];
+                        3'b010: p[63:32] <= 	data_in[31:0];
+                        default: begin end
+                    endcase
+                end
+                32'd5: begin
+                    /* STORE_PRIVATE_KEY_2: q */
+                    case(address)
+                        3'b001: q[31:0] <= data_in[31:0];
+                        3'b010: q[63:32] <= data_in[31:0];
+                        default: begin end
+                    endcase
+                end
+                32'd8: begin
+                    /* READ_PUBLIC_KEY_1: n */
+                    case (address)
+                        3'b001: outputBits[31:0] <= 	n[31:0];
+                        3'b010: outputBits[63:32] <= 	n[63:32];
+                        3'b011: outputBits[95:64] <= 	n[95:64];
+                        3'b100: outputBits[127:96] <=	n[127:96];
+                        default: begin end
+                    endcase
+                end
+                32'd9: begin
+                    /* READ_PUBLIC_KEY_2: e */
+                    outputBits[31:0] <= e[31:0];
+                end
+                default: begin
+                end
+            endcase
         end // end for _writing_
     end // end always_ff
     endmodule
