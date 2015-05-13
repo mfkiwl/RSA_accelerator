@@ -46,8 +46,8 @@ void send_instruction(int operation)
     if (rsa_box_fd == -1)
         set_fd();
 
-    rsa_userspace_vals.digit =  INSTRUCTION;
-    rsa_userspace_vals.segments = operation;
+    rsa_userspace_vals.address =  INSTRUCTION;
+    rsa_userspace_vals.data_in = operation;
 
 #ifdef PRINTVERBOSE
     printf("[instruction] calling %d\n", operation);
@@ -74,8 +74,8 @@ void send_bits(int32_t *value, int count)
 
     for (i = 0; i < count; i++)
     {
-        rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-        rsa_userspace_vals.segments =  value[i];
+        rsa_userspace_vals.address = BIT_SEGMENTS[i];
+        rsa_userspace_vals.data_in = value[i];
 
 #ifdef PRINTVERBOSE
         printf("[sending] %d // %d\n", BIT_SEGMENTS[i], value[i]); 
@@ -153,14 +153,14 @@ void read_segment(int32_t *bit_output, int size)
 
     for (i = 0; i < size; i++)
     {
-        rsa_userspace_vals.digit = BIT_SEGMENTS_READ[i];
+        rsa_userspace_vals.address = BIT_SEGMENTS_READ[i];
 
         if (ioctl(rsa_box_fd, RSA_BOX_READ_DIGIT, &rsa_userspace_vals)) 
         {
             perror("ioctl(RSA_BOX_READ_DIGIT) failed");
         }
 
-        bit_output[i] = rsa_userspace_vals.segments; 
+        bit_output[i] = rsa_userspace_vals.data_in; 
         
 #ifdef PRINTVERBOSE
         printf("[reading] %d // %d\n", i, bit_output[i]);

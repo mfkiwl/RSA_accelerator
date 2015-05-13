@@ -51,15 +51,15 @@ struct vga_led_dev {
  * Write segments of a single digit
  * Assumes digit is in range and the device information has been set up
  */
-static void write_digit(int digit, u32 segments)
+static void write_digit(int address, u32 segments)
 { 
-	iowrite32(segments, dev.virtbase + digit * 4);
+	iowrite32(segments, dev.virtbase + address * 4);
 }
 
-static u32 read_digit(int digit)
+static u32 read_digit(int address)
 { 
 	u32 answer; 
-	answer = ioread32(dev.virtbase + digit * 4);
+	answer = ioread32(dev.virtbase + address * 4);
 	return answer; 
 }
 
@@ -77,14 +77,14 @@ static long vga_led_ioctl(struct file *f, uint32_t cmd, unsigned long arg)
 		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
 				   sizeof(rsa_box_arg_t)))
 			return -EACCES;
-		write_digit(vla.digit, vla.segments);
+		write_digit(vla.address, vla.data_in);
 		break;
 
 	case RSA_BOX_READ_DIGIT:
 		if (copy_from_user(&vla, (rsa_box_arg_t *) arg,
 				   sizeof(rsa_box_arg_t)))
 			return -EACCES;
-		vla.segments = read_digit(vla.digit);
+		vla.data_in = read_digit(vla.address);
 		if (copy_to_user((rsa_box_arg_t *) arg, &vla,
 				 sizeof(rsa_box_arg_t)))
 			return -EACCES;
