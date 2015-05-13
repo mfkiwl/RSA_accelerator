@@ -5,8 +5,8 @@
 #include <linux/types.h>     /* for unit32_t */
 
 typedef struct {
-  int digit;
-  uint32_t segments; 
+  int digit; // address
+  uint32_t segments; // data_in 
 } rsa_box_arg_t;
 
 #define RSA_BOX_MAGIC 'q'

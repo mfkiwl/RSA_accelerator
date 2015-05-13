@@ -1,15 +1,17 @@
 #ifndef __C_WRAPPER_H__
 #define __C_WRAPPER_H__
 
-// function declarations
-void store_private_keys(int32_t *p, int32_t *q);
-void store_public_keys(int32_t *n, int32_t *e);
+#define PRIVATE                 0
+#define PUBLIC                  1
+#define DECRYPT_SEND            0
+#define ENCRYPT_SEND            1 
 
-void intwise_encrypt(int32_t *message_n);
-void intwise_decrypt(int32_t *cypher_n_d);
+void store_keys(int type, int32_t *key_1, int32_t *key_2);
+void send_int_encrypt_decrypt(int action, int32_t *message_n);
+void read_output(int32_t *bit_output);
+void read_public_keys(int32_t *key_1, int32_t *key_2);
 
 void set_fd();
 void print_128_bit_integer(int32_t *input_x);
-void read_segment(int32_t *bit_output);
 
 #endif

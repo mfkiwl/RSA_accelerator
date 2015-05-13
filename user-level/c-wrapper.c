@@ -2,8 +2,7 @@
  * Userspace program that communicates with the RSA_Box device driver
  * primarily through ioctls.
  *
- * Original VGA_LED code by Stephen A. Edwards
- * Columbia University
+ * Original VGA_LED code by Stephen A. Edwards, Columbia University
  */
 
 #include <stdio.h>
@@ -18,13 +17,9 @@
 #include <stdint.h>     /* for unit32_t */
 #include "../rsa_box.h"
 #include "instructions.h"
+#include "c-wrapper.h"
 
-
-/* size constants */
-#define ADDR_SIZE_MAKE_KEY 4
-#define ADDR_SIZE_ENCRYPT 5
-#define ADDR_SIZE_DECRYPT 4
-#define READ_SIZE_RSA 4
+void read_segment(int32_t *bit_output, int size);
 
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
@@ -40,203 +35,126 @@ void set_fd()
     }
 }
 
-/* // TODO
-void send_op_to_hardware(int operation, int32_t *value)
+/*
+ * Tells hardware what instruction to include the incoming
+ * data with.
+ */
+void send_instruction(int operation)
 {
     rsa_box_arg_t rsa_userspace_vals;
-    int i;
 
     rsa_userspace_vals.digit =  INSTRUCTION;
     rsa_userspace_vals.segments = operation;
 
+    printf("[instruction] calling %d\n", operation);
+
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
+}
 
-    int addr_size;
+/*
+ * Sends count int32_t's to the hardware. 
+ * Always call send_instruction() first or the hardware won't know
+ * what to do with the incoming data.
+ */
+void send_bits(int32_t *value, int count)
+{
+    rsa_box_arg_t rsa_userspace_vals;
+    int i;
     
-
-    for (i = 0; i < ADDR_SIZE_MAKE_KEY; i++) 
+    for (i = 0; i < count; i++)
     {
-    	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments =  p_and_q[i];
+        rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
+        rsa_userspace_vals.segments =  value[i];
 
-	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], p_and_q[i]); 
+        printf("[sending] %d // %d\n", BIT_SEGMENTS[i], value[i]); 
 
-    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+        if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
         {
-      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    	}
+            perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
+        }
     }
 
 }
-*/
 
-void store_private_keys(int32_t *p_and_q)
+/*
+ * Stores keys into the specified registers, PUBLIC or PRIVATE
+ * key registers.
+ */
+void store_keys(int type, int32_t *key_1, int32_t *key_2)
+{
+    if (type == PRIVATE)
+    {
+        send_instruction(STORE_PRIVATE_KEY_1);
+        send_bits(key_1, 2); // p
+        send_instruction(STORE_PRIVATE_KEY_2);
+        send_bits(key_2, 2); // q
+    }
+    
+    if (type == PUBLIC)
+    {
+        send_instruction(STORE_PUBLIC_KEY_1);
+        send_bits(key_1, 4); // n
+        send_instruction(STORE_PUBLIC_KEY_2);
+        send_bits(key_2, 1); // e
+    }
+}
+
+/*
+ * Send data to encrypt/decrypt to device.
+ */
+void send_int_encrypt_decrypt(int action, int32_t *input)
+{
+    if (action == ENCRYPT_SEND)
+    {
+        send_instruction(ENCRYPT_BITS);
+        send_bits(input, 4);
+    }
+    
+    if (action == DECRYPT_SEND)
+    {
+        send_instruction(DECRYPT_BITS);
+        send_bits(input, 4);
+    }
+}
+
+/*
+ * Return the public keys on this device.
+ *
+ * (Note: the interface to read private keys was intentionally ommitted.
+ */
+void __read_public_keys(int32_t *key_1, int32_t *key_2)
+{
+    send_instruction(READ_PUBLIC_KEY_1);
+    read_segment(key_1, 4);
+    send_instruction(READ_PUBLIC_KEY_2);
+    read_segment(key_2, 1);
+}
+
+void read_segment(int32_t *bit_output, int size)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
 
-    rsa_userspace_vals.digit =  INSTRUCTION;
-    rsa_userspace_vals.segments =  MAKE_KEY;
-
-    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+    for (i = 0; i < size; i++)
     {
-        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    }
+        rsa_userspace_vals.digit = BIT_SEGMENTS_READ[i];
 
-    for (i = 0; i < ADDR_SIZE_MAKE_KEY; i++) 
-    {
-    	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments =  p_and_q[i];
-
-	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], p_and_q[i]); 
-
-    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
+        if (ioctl(rsa_box_fd, RSA_BOX_READ_DIGIT, &rsa_userspace_vals)) 
         {
-      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    	}
+            perror("ioctl(RSA_BOX_READ_DIGIT) failed");
+        }
+
+        bit_output[i] = rsa_userspace_vals.segments; 
     }
 }
 
-void intwise_encrypt(int32_t *message_n)
+/* 
+ * Read 128 bits from hardware output into into [bit_output]. 
+ */
+void read_output(int32_t *bit_output)
 {
-    rsa_box_arg_t rsa_userspace_vals;
-    int i;
-
-    rsa_userspace_vals.digit =  INSTRUCTION;
-    rsa_userspace_vals.segments =  ENCRYPT; 
-
-    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-    {
-        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    }
-
-    for (i = 0; i < ADDR_SIZE_ENCRYPT; i++) {
-    	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments =  message_n[i];
-
-	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], message_n[i]); 
-
-    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-        {
-      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    	}
-    }
-}
-
-
-/* store public keys to be used for decryption. */
-void store_public_keys(int32_t *n, int32_t *d)
-{
-    rsa_box_arg_t rsa_userspace_vals;
-    int i;
-
-    rsa_userspace_vals.digit = INSTRUCTION;
-    rsa_userspace_vals.segments = DECRYPT_1;
-
-    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-    {
-        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    }
-
-    for (i = 0; i < ADDR_SIZE_DECRYPT; i++)
-    {
-    	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments =  n[i];
-
-	printf("[sending] %d // %d\n", BIT_SEGMENTS[i], n[i]); 
-
-    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-        {
-      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    	}
-    }
-
-    rsa_userspace_vals.digit = INSTRUCTION;
-    rsa_userspace_vals.segments = DECRYPT_2;
-
-    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-    {
-        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    }
-
-    for (i = 0; i < ADDR_SIZE_DECRYPT; i++)
-    {
-    	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments =  n[i];
-
-	printf("[sending] %d // %d\n",
-                BIT_SEGMENTS[i],
-                n[i]);
-
-    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-        {
-      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    	}
-    }
-}
-
-/* sends decrypt instruction to hardware. */
-void intwise_decrypt(int32_t *cypher)
-{
-    rsa_box_arg_t rsa_userspace_vals;
-    int i;
-
-    // send instruction
-    rsa_userspace_vals.digit =  INSTRUCTION;
-    rsa_userspace_vals.segments = DECRYPT_3;
-
-    if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-    {
-        perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    }
-
-    // send actual value
-    for (i = 0; i < ADDR_SIZE_DECRYPT; i++)
-    {
-    	rsa_userspace_vals.digit =  BIT_SEGMENTS[i];
-    	rsa_userspace_vals.segments = 
-                cypher[i];
-
-	printf("[sending] %d // %d\n", 
-                BIT_SEGMENTS[i], 
-                cypher[i]); // cypher[i + 2 * ADDR_SIZE_DECRYPT]); 
-
-    	if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
-        {
-      	    perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    	}
-    }
-}
-
-/* read 128 bit from kernel space into user space and store in [bit_output] */
-void read_segment(int32_t *bit_output)
-{
-    rsa_box_arg_t rsa_userspace_vals;
-    int i;
-
-    for (i = 0; i < READ_SIZE_RSA; i++)
-    {
-    	rsa_userspace_vals.digit = BIT_SEGMENTS_READ[i];
-    	
-	if (ioctl(rsa_box_fd, RSA_BOX_READ_DIGIT, &rsa_userspace_vals)) 
-        {
-      		perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
-    	}
-        
-    	bit_output[i] = rsa_userspace_vals.segments; 
-    }
-}
-
-// print out 128 bit int, but by [sections]
-void print_128_bit_integer(int32_t *input_x)
-{
-   int i;  
-   
-   for (i = 0; i < 4; i++)
-   {
-	printf("quartile(%d): %u\n", i, input_x[i]);  
-   }
+    read_segment(bit_output, 4);
 }

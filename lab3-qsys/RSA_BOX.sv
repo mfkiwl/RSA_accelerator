@@ -2,14 +2,14 @@
  * Code for RSA Box, a hardware implementation of the RSA algorithm.
  */
 
-module VGA_LED(input logic      clk,
+module RSA_BOX(input logic      clk,
         input logic             reset,
         input logic             write,
         input                   chipselect,
         input logic[31:0]       data_in, // the current 32 bit input
         input logic[2:0]        address, // which 32 bit segment of each structure to write into
-        output logic[31:0]      data_out, 
-		  output	logic				  is_ready
+        output logic[31:0]      data_out 
+//		  output	logic				  is_ready
     ); 
 
     /* instruction bits (can pick from instructions defined in user-level/instructions.h) */
@@ -32,7 +32,7 @@ module VGA_LED(input logic      clk,
     // ALU alu_input( .*  );
 
     always_ff @(posedge clk) begin
-        if (reset || (address == 3'b000 && instrBits == 1'b)) begin
+        if (reset || (address == 3'b000 && instrBits == 1'b1)) begin
             /* reset triggered when clock starts */
             data_out <= 		32'd0; 
             instrBits <= 		32'd0;     // reset typeof(instr)
@@ -62,7 +62,7 @@ module VGA_LED(input logic      clk,
 				
 				/****** INSTRUCTIONS: check which each instruction *******/ 
             /* STORE_PUBLIC_KEY_1: n */
-            if(instrBits == 2) begin
+            if(instrBits == 4'd2) begin
                 case(address)
                     3'b001: n[31:0] <= 	data_in[31:0];
                     3'b010: n[63:32] <= 	data_in[31:0];
@@ -72,13 +72,13 @@ module VGA_LED(input logic      clk,
             end
               
             /* STORE_PUBLIC_KEY_2: e */
-            else if(instrBits == 3) begin
+            else if(instrBits == 4'd3) begin
 						e[31:0] <= 	data_in[31:0];
 						functionCall <= 2'b10; // all data recvd
             end
             
             /* STORE_PRIVATE_KEY_1: p */
-            else if (instrBits == 4) begin
+            else if (instrBits == 4'd4) begin
 					case(address)
 						3'b001: p[31:0] <= 	data_in[31:0];
 						3'b010: p[63:32] <= 	data_in[31:0];
@@ -86,15 +86,15 @@ module VGA_LED(input logic      clk,
             end
                     
 				/* STORE_PRIVATE_KEY_2: q */
-            else if (instrBits == 5) begin
+            else if (instrBits == 4'd5) begin
 					case(address)
-						3'b001: q[159:128] <= data_in[31:0];
-						3'b010: q[191:160] <= data_in[31:0];
+						3'b001: q[31:0] <= data_in[31:0];
+						3'b010: q[63:32] <= data_in[31:0];
                endcase
             end
 
 				/* READ_PUBLIC_KEY_1: n */
-				else if (instrBits == 8) begin
+				else if (instrBits == 5'd8) begin
 					case (address)
 						3'b001: outputBits[31:0] <= 	n[31:0];
                   3'b010: outputBits[31:0] <= 	n[63:32];
@@ -104,7 +104,7 @@ module VGA_LED(input logic      clk,
 				end
 				
 				/* READ_PUBLIC_KEY_2: e */
-				else if (instrBits == 9) begin
+				else if (instrBits == 5'd9) begin
 					outputBits[31:0] <= e[31:0];
 				end
         end // end for _writing_
