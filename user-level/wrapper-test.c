@@ -40,9 +40,6 @@ int main()
     printf("\n[test case: storing and reading public keys...]\n\n");
     store_keys(PUBLIC, public_e, public_n); 
     __read_public_keys(public_e_output, public_n_output);
-    read_output(public_e_output);
-    
-    print_128_bit_integer(public_e_output);
     
     free(public_e_output);
     return 0;
