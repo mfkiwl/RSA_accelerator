@@ -19,8 +19,6 @@
 #include "instructions.h"
 #include "c-wrapper.h"
 
-#define ADDR_SIZE       128 / 32
-
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
 static int BIT_SEGMENTS_READ[4] = {0, 1, 2, 3};
