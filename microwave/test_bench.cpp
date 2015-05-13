@@ -2,7 +2,7 @@
 #include "VincrementA.h"
 #include <iostream>
 #include "verilated_vcd_c.h"
-#define MAXTIME 100 
+#define MAXTIME 3000 
 
 using namespace std; 
 
@@ -36,6 +36,8 @@ void toggle(VincrementA *top){
 
 
 int main(int argc, char **argv, char **env){
+    
+    int a, b, n; 
     Verilated::commandArgs(argc, argv);    
     
     //create top module
@@ -46,9 +48,17 @@ int main(int argc, char **argv, char **env){
     top->trace(tfp, 99); 
     tfp->open("trace.vcd"); 
     //initialize reset to true, as well as pass in a and b values
-    top->reset = 1; 
+    top->reset = 1;
+
+    a = 222; 
+    b = 125; 
+    n = 19; 
+    int ans = ( (a*b)%n );  
     top->clk = 0; 
-    top->a = 15; 
+    top->a[0] = a; 
+    top->b[0] = b; 
+    top->n[0] = n; 
+
     while(!Verilated::gotFinish()){    
         tfp->dump(main_time);
         toggle(top);
@@ -57,6 +67,8 @@ int main(int argc, char **argv, char **env){
         }
     }
 
+    cout << to_string(ans) << endl; 
+    cout << to_string(top->outputAnswer[0]) <<endl; 
     tfp->close(); 
     top->final(); 
     delete top;
