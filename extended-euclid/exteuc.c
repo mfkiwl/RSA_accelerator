@@ -11,7 +11,7 @@ void err_sys(char *err) {
 	exit(1);
 }
 
-void e_euclid(int e, int phi_n) {
+void e_euclid(int e, int phi1 , int phi2, int phi3) {
 	pid_t pid;
 	int fd[2];
 
@@ -52,13 +52,25 @@ void e_euclid(int e, int phi_n) {
 			}
 		}
 
+		char e_s[READ_BUF]; 
+
+		char phi_s[READ_BUF];
+		char phi2_s[READ_BUF]; 
+		char phi3_s[READ_BUF];
+		
+		snprintf(e_s, READ_BUF, "%d\n", e);
+
+		snprintf(phi_s, READ_BUF, "%d\n", phi1);
+		snprintf(phi2_s, READ_BUF, "%d\n", phi2);
+		snprintf(phi3_s, READ_BUF, "%d\n", phi3);
+
 		// execute Python script
-		execlp("python", "python", "exteuc.py", "2", "15", (char *)NULL);
+		execlp("python", "python", "exteuc.py", e_s, phi_s, phi2_s, phi3_s, (char *)NULL);
 	}
 }
 
 int main() {
 
-	e_euclid(3, 5);
+	e_euclid(2, 0, 2, 5);
 	return 0;
 }
