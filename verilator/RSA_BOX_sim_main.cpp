@@ -2,14 +2,14 @@
 #include "verilated.h"
 #include <iostream>
 #include "verilated_vcd_c.h"
-#define MAXTIME 10000 
+#define MAXTIME 1000 
 
 using namespace std; 
 
 vluint64_t main_time = 1; 
 int clock_value = 1;
 
-
+int c_three = 30; 
 double sc_time_stamp(){
     return main_time;
 }
@@ -30,61 +30,61 @@ void toggle(VRSA_BOX *top){
         top->data_in = 2;
     }
 
-    if(main_time == 20){
+    if(main_time == c_three){
         top->address = 1; 
         top->data_in = 9; 
     }
 
-    if(main_time == 30){
+    if(main_time == c_three*2){
         top->address = 2; 
         top->data_in = 13; 
     }
 
-    if (main_time == 40) {
+    if (main_time == c_three*3) {
         top->address = 3;
         top->data_in = 2039423;
     }
 
-    if (main_time == 50) {
+    if (main_time == c_three*4) {
         top->address = 4;
         top->data_in = 99872;
     }
 
     // send READ_PUBLIC_KEY_1 instruction
-    if (main_time == 60) {
+    if (main_time == c_three*5) {
         top->address = 0;
         top->data_in = 8;
     }
 
-    if (main_time == 70) {
+    if (main_time == c_three*6) {
         top->address = 1;
     }
 
-    if (main_time == 80) {
+    if (main_time == c_three*7) {
         top->address = 2;
     }
-    if (main_time == 90) {
+    if (main_time == c_three*8) {
         top->address = 3;
     }
-    if (main_time == 100) {
+    if (main_time == c_three*9) {
         top->address = 4;
     }
 
     // read from wire
-    if (main_time == 110) {
+    if (main_time == c_three*10) {
         top->write = 0;
         top->address = 0;    
     }
 
-    if (main_time == 120) {
+    if (main_time == c_three*11) {
         top->address = 1;    
     }
 
-    if (main_time == 130) {
+    if (main_time == c_three*12) {
         top->address = 2;    
     }
 
-    if (main_time == 140) {
+    if (main_time == c_three*13) {
         top->address = 3;    
     }
 
