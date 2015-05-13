@@ -1,9 +1,14 @@
+import sys
+
 def inverse(e, phi_n):
     '''Extended Euclidean Algorithm'''
+    e_cast = int(e)
+    phi_cast = int(phi_n)
+
     d =	0
     new_d = 1
-    r =	phi_n
-    new_r =	e
+    r =	phi_cast
+    new_r =	e_cast
 	
     while new_r is not 0:
         quotient = r / new_r
@@ -14,17 +19,20 @@ def inverse(e, phi_n):
 		return -1 # error
     
     if d < 0:
-        d = d + phi_n
+        d = d + phi_cast
     
     return d
 
 def print_test(test_no, phi, e, d):
+    '''verifies the computation of Extended Euclid's'''
+    # to test... print_test(1, 15, 2, 8) or print_test(2, 21, 2, 11)
+
     print "[test %d]: phi_n: %d, e: %d" % (test_no, phi, e)
     print " - desired: %d" % d
     print " - result: %d" % (inverse(e, phi)) 
 
 def main():
-    print_test(1, 15, 2, 8)
-    print_test(2, 21, 2, 11)
+    d = inverse(sys.argv[1], sys.argv[2])
+    print str(d), "\0"
 	
 main()

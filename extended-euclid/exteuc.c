@@ -52,12 +52,8 @@ void e_euclid(int e, int phi_n) {
 			}
 		}
 
-		char *message = "hello world";
-		size_t size = strlen(message) + 1;
-
-		if(write(STDOUT_FILENO, message, size) != size) {
-			err_sys("write error");
-		}
+		// execute Python script
+		execlp("python", "python", "exteuc.py", "2", "15", (char *)NULL);
 	}
 }
 
