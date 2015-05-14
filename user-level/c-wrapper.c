@@ -52,7 +52,7 @@ void send_instruction(int operation)
     rsa_userspace_vals.data_in = operation;
 
 #ifdef PRINTVERBOSE
-    printf("[instruction] calling %d\n", operation);
+    log_instruction(operation);
 #endif
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))

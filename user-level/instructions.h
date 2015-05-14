@@ -18,4 +18,7 @@
 #define STORE_MESSAGE           10 // m
 #define STORE_MESSAGE2           11 // m
 #define STORE_D          12 // m
+
+void log_instruction(int opcode);
+
 #endif
