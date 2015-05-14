@@ -16,8 +16,10 @@
 #define READ_PUBLIC_KEY_1       8 // n
 #define READ_PUBLIC_KEY_2       9 // e
 #define STORE_MESSAGE           10 // m
-#define STORE_MESSAGE2           11 // m
-#define STORE_D          12 // m
+#define STORE_MESSAGE2          11 // m
+#define STORE_D                 12 // m
+
+#define READ_OUR_N              14 // p * q 
 
 void log_instruction(int opcode);
 

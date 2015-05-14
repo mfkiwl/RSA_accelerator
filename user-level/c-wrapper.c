@@ -26,6 +26,7 @@ void send_bits(int32_t *value, int count);
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
 static int BIT_SEGMENTS_READ[5] = {0, 1, 2, 3, 4};
 static int rsa_box_fd = -1;
+static int empty[4] = {0, 0, 0, 0}; 
 
 void set_fd()
 {
@@ -167,21 +168,10 @@ void __read_encryption(int32_t *encryption){
 }
 void __read_public_keys(int32_t *key_1, int32_t *key_2)
 {
-    int i;
-    int empty[4]; 
-    
-    for(i = 0; i < 4; i++) {
-        empty[i] = READ_PUBLIC_KEY_1; 
-    }
-    
     send_instruction(READ_PUBLIC_KEY_1);
     send_bits(empty, 4); 
     read_segment(key_1, 5);
     
-    for(i = 0; i < 4; i++) {
-        empty[i] = READ_PUBLIC_KEY_2; 
-    }
-
     send_instruction(READ_PUBLIC_KEY_2);
     send_bits(empty, 1); 
     read_segment(key_2, 5);
@@ -206,6 +196,16 @@ void read_segment(int32_t *bit_output, int size)
 
         bit_output[i] = rsa_userspace_vals.data_in;         
     }
+}
+
+/*
+ * Get the product of p and q.
+ */
+void read_our_N(int32_t *n)
+{
+    send_instruction(READ_OUR_N);
+    send_bits(empty, 4); 
+    read_segment(n, 4);
 }
 
 /* 
