@@ -12,6 +12,8 @@
 #include "c-wrapper.h"
 #include "instructions.h"
 
+#include "prime-generator.h"
+
 int rsa_box_fd;
 
 // print out 128 bit int, but by [sections]
@@ -28,7 +30,6 @@ int main()
     /*
      * main tests
      */
-
     // for encryption
     int i; 
     int32_t public_e[4] = {8,0,0,0};

@@ -38,17 +38,28 @@ def main():
 
     e = int(sys.argv[1])
 
-    phi = int(sys.argv[4])
+    phi = int(sys.argv[5])
     
-    add1 = int(sys.argv[3]) << 32
-    add2 = int(sys.argv[2]) << 64
+    add1 = int(sys.argv[4]) << 32
+    add2 = int(sys.argv[3]) << 64
+    add3 = int(sys.argv[2]) << 96
     
     phi += add1
     phi += add2
+    phi += add3
 
     # test values: e = 2; phi = 2**33 + 5
 
     d = inverse(e, phi)
-    print str(d), "\0"
-	
+    # print str(bin(d)) + " " + str(d), "\0"
+
+    d_list = format(d, '#0130b')
+    temp = int(str(d_list[2:34]), 2) # topmost 32 bits
+    temp2 = int(str(d_list[34:66]), 2) 
+    temp3 = int(str(d_list[66:98]), 2)
+    temp4 = int(str(d_list[98:130]), 2) 
+
+    ret = str(temp) + " " + str(temp2) + " " + str(temp3) + " " + str(temp4)
+    # print str(d_list)
+    print ret
 main()
