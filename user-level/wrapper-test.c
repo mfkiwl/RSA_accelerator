@@ -36,59 +36,16 @@ int main()
     int32_t public_n[4] = {0, 0, 1, 0};
     int32_t message[4]  = {0,1,0,0};  
 
-
-
     int32_t *public_e_output = malloc(sizeof(int32_t) * 5);
-    int32_t public_n_output[5];
     printf("RSA Box device driver started\n");
 
     /* DECRYPT */ 
-    printf("\n[test case: storing and reading public keys...]\n\n");
+    printf("\n[test case: storing and reading public keys...]\n");
     store_keys(PUBLIC, public_n, public_e); 
-    //__read_public_keys(public_e_output, public_n_output);
     send_int_encrypt_decrypt(DECRYPT_SEND, message, public_e_output); 
     for(i = 0; i < 5; i++) {
 	printf("%d\n", public_e_output[i]);  
     }
     free(public_e_output);
     return 0;
-/*
-    // [setting] n
-    input_x_n[0] = 0;
-    input_x_n[1] = 1;
-    input_x_n[2] = 0;
-    input_x_n[3] = 1;
- 
-    // [setting] message to encrypt
-    input_x_encrypt[0] = 5; 
-    input_x_encrypt[1] = 5; 
-    input_x_encrypt[2] = 3; 
-    input_x_encrypt[3] = 0; 
-    input_x_encrypt[4] = 0 ;  
-    
-    // [setting] return values (reset to 0)
-    return_x[0] = 0; 
-    return_x[1] = 0; 
-    return_x[2] = 0; 
-    return_x[3] = 0; 
-
-    // ENCRYPT
-    printf("\n[encrypt...]\n\n");
-    intwise_encrypt(input_x_encrypt); 
-    
-    printf("\n[read result...]\n\n");
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-    
-    // MAKE KEYS
-    printf("\n[make keys...]\n\n");
-    store_private_keys(input_x_n); 
-
-    printf("\n[read result...]\n\n");
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-*/
-    printf("\n...done\n");
-    return 0;
 }
-
