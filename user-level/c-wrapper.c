@@ -211,8 +211,11 @@ void read_segment(int32_t *bit_output, int size)
  */
 void read_our_N(int32_t *n)
 {
-    send_instruction(READ_OUR_N);
-    send_bits(empty, 4); 
+    send_instruction(MAKE_OUR_N);
+    send_bits(empty, 1); 
+    
+    send_instruction(READ_OUR_N); 
+    send_bits(empty, 1); 
     read_segment(n, 4);
 }
 

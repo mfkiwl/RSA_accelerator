@@ -66,7 +66,7 @@ int main()
     // need to be able to get back n to send to other client
 
     /* DECRYPT */ 
-    read_our_public_key(n);
+    read_our_N(n);
     print_128_bit_integer(n);
    
     return 0; 
