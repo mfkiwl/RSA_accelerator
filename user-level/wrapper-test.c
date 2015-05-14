@@ -25,27 +25,63 @@ void print_128_bit_integer(int32_t *input_x)
         printf("quartile(%d): %u\n", i, input_x[i]);  
 }
 
+/*
+ * Return 1 if all size 32 bit numbers in the value are 
+ * equal; else return 0.
+ */
+int large_number_comparison(int32_t *a, int32_t *b, int size)
+{
+    int i;
+    for (i = 0; i < size; i++)
+        if (a[i] != b[i]) return 0;
+
+    return 1;
+}
+
 int main()
 {
     /*
      * main tests
      */
-    // for encryption
-    int i; 
-    int32_t public_e[4] = {8,0,0,0};
-    int32_t public_n[4] = {0, 0, 1, 0};
-    int32_t message[4]  = {0,1,0,0};  
+    
+    int32_t p[2];
+    int32_t q[2];
 
-    int32_t *p = ((int32_t) generate_prime());
-    int32_t public_e_output[5];
+    int32_t e[4] = {8, 0, 0, 0};
+    int32_t n[4] = {0, 0, 1, 0};
+    int32_t e_check[4];
+    int32_t n_check[4];
+
+    //int32_t message[4]  = {0,1,0,0};  
+
     printf("RSA Box device driver started\n");
+    
+    /* STORING PRIVATE KEY. */ 
+    p[0] = 0;
+    p[1] = 13;
+    q[0] = 0;
+    q[1] = 7;
+
+    printf("\n[test case: storing private key...]\n");
+    store_keys(PRIVATE, p, q); 
+    // need to be able to get back n to send to other client
 
     /* DECRYPT */ 
+/*
     printf("\n[test case: storing and reading public keys...]\n");
-    store_keys(PUBLIC, public_n, public_e); 
     send_int_encrypt_decrypt(DECRYPT_SEND, message, public_e_output); 
     for(i = 0; i < 5; i++) {
 	printf("%d\n", public_e_output[i]);  
     }
+*/
+    
+    /* STORING AND READING OTHER'S PUBLIC KEY. */
+    printf("\n[test case: storing and reading public keys...]\n");
+    store_keys(PUBLIC, n, e);
+    __read_public_keys(n_check, e_check);
+    large_number_comparison(n, n_check, 4);
+    large_number_comparison(e, e_check, 4);
+    
+
     return 0;
 }
