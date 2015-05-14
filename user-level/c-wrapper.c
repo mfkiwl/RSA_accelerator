@@ -20,6 +20,7 @@
 #include "c-wrapper.h"
 
 void read_segment(int32_t *bit_output, int size);
+void send_bits(int32_t *value, int count); 
 
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
@@ -59,11 +60,14 @@ void send_instruction(int operation)
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
 
+    for(i=0; i<4; i++){
+        empty[i] = operation; 
+    }
     if(operation == READ_PUBLIC_KEY_1){
-        for(i=0; i<4; i++){
-                empty[4] = READ_PUBLIC_KEY_1; 
-        }
         send_bits(empty, 4); 
+    }
+    if(operation == READ_PUBLIC_KEY_2){
+        send_bits(empty, 1); 
     }
 }
 
