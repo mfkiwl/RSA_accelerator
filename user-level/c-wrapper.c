@@ -24,7 +24,7 @@ void send_bits(int32_t *value, int count);
 
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
-static int BIT_SEGMENTS_READ[4] = {0, 1, 2, 3};
+static int BIT_SEGMENTS_READ[5] = {0, 1, 2, 3, 4};
 static int rsa_box_fd = -1;
 
 void set_fd()
@@ -69,6 +69,10 @@ void send_instruction(int operation)
     if(operation == READ_PUBLIC_KEY_2){
         send_bits(empty, 1); 
     }
+    
+   // if (operation == ENCRYPT_BITS){
+//	send_bits(empty, 1); 
+  //  }
 }
 
 /*
@@ -118,8 +122,11 @@ void store_keys(int type, int32_t *key_1, int32_t *key_2)
     if (type == PUBLIC)
     {
         send_instruction(STORE_PUBLIC_KEY_1);
-        send_bits(key_1, 4); // n
-        send_instruction(STORE_PUBLIC_KEY_2);
+        send_bits(key_1, 4); // n 
+       
+        
+
+	send_instruction(STORE_PUBLIC_KEY_2);
         send_bits(key_2, 1); // e
     }
 }
@@ -127,12 +134,17 @@ void store_keys(int type, int32_t *key_1, int32_t *key_2)
 /*
  * Send data to encrypt/decrypt to device.
  */
-void send_int_encrypt_decrypt(int action, int32_t *input)
+void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
 {
     if (action == ENCRYPT_SEND)
     {
+	send_instruction(STORE_MESSAGE);
+        send_bits(input, 4); // m
+
         send_instruction(ENCRYPT_BITS);
         send_bits(input, 4);
+
+	__read_encryption(output); 
     }
     
     if (action == DECRYPT_SEND)
@@ -147,12 +159,34 @@ void send_int_encrypt_decrypt(int action, int32_t *input)
  *
  * (Note: the interface to read private keys was intentionally ommitted.
  */
+
+void __read_encryption(int32_t *encryption){
+	
+	int32_t valid[5] = {0,0,0,0,0};
+	int i; 		
+	send_instruction(ENCRYPT_BITS); 
+	send_bits(valid, 2); 
+	while(!valid[4]){
+		send_instruction(ENCRYPT_BITS); 
+		read_segment(valid, 5); 
+	} 
+
+	read_segment(valid, 5); 
+	
+	//sleep(5); 
+        //read_segment(valid, 5);
+ 	
+        for(i=0; i<4; i++){
+		encryption[i] = valid[i]; 
+	}
+
+}
 void __read_public_keys(int32_t *key_1, int32_t *key_2)
 {
     send_instruction(READ_PUBLIC_KEY_1);
-    read_segment(key_1, 4);
+    read_segment(key_1, 5);
     send_instruction(READ_PUBLIC_KEY_2);
-    read_segment(key_2, 1);
+    read_segment(key_2, 5);
 }
 
 void read_segment(int32_t *bit_output, int size)
@@ -172,11 +206,7 @@ void read_segment(int32_t *bit_output, int size)
             perror("ioctl(RSA_BOX_READ_DIGIT) failed");
         }
 
-        bit_output[i] = rsa_userspace_vals.data_in; 
-        
-#ifdef PRINTVERBOSE
-        printf("[reading] %d // %d\n", i, bit_output[i]);
-#endif
+        bit_output[i] = rsa_userspace_vals.data_in;         
     }
 }
 
