@@ -73,8 +73,13 @@
                 end
                 32'd3: begin  
                     /* STORE_PUBLIC_KEY_2: e */
-                    e[31:0] <= 	data_in[31:0];
-                    functionCall <= 2'b10; // all data recvd
+                    case(address)
+                        3'b001: begin
+                            e[31:0] <= 	data_in[31:0];
+                            functionCall <= 2'b10; // all data recvd
+                        end
+                        default: begin end
+                    endcase
                 end
                 32'd4: begin
                     /* STORE_PRIVATE_KEY_1: p */
@@ -104,7 +109,12 @@
                 end
                 32'd9: begin
                     /* READ_PUBLIC_KEY_2: e */
-                    outputBits[31:0] <= e[31:0];
+                    case(address)
+                        3'b001: begin
+                            outputBits[31:0] <= e[31:0];
+                        end
+                        default: begin end
+                    endcase
                 end
                 default: begin
                 end
