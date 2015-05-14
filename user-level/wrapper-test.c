@@ -47,7 +47,7 @@ int main()
     int32_t p[2];
     int32_t q[2];
 
-    int32_t e[4] = {8, 0, 0, 0};
+    int32_t e[1] = {8};
     int32_t n[4] = {0, 0, 1, 0};
     int32_t e_check[4];
     int32_t n_check[4];

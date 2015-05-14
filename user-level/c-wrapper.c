@@ -194,7 +194,10 @@ void read_segment(int32_t *bit_output, int size)
             perror("ioctl(RSA_BOX_READ_DIGIT) failed");
         }
 
-        bit_output[i] = rsa_userspace_vals.data_in;         
+        bit_output[i] = rsa_userspace_vals.data_in; 
+#ifdef PRINTVERBOSE
+        printf("[sending] %d // %d\n", BIT_SEGMENTS_READ[i], bit_output[i]); 
+#endif        
     }
 }
 
