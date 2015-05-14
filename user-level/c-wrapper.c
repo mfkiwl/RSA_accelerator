@@ -170,7 +170,7 @@ void __read_public_keys(int32_t *key_1, int32_t *key_2)
     
     send_instruction(READ_PUBLIC_KEY_2);
     send_bits(empty, 1); 
-    read_segment(key_2, 5);
+    read_segment(key_2, 1);
 }
 
 void read_segment(int32_t *bit_output, int size)
