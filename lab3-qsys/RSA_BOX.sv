@@ -39,10 +39,11 @@
     logic[127:0] decrypt_message; 
     logic ready_for_decrypt; 
 
+    logic[127:0] our_n;
          //assign reset_exponent = (reset | reset_exponent_signal);
 
          exponentiate encryptModule(.reset(reset_exponent), .clk(clk), .m(m), .e(e), .n(n), .c(c), .ready(ready_for_encrypt)) ; 
-         exponentiate decryptModule(.reset(reset_decrypt), .clk(clk), .m(m1), .e(d), .n(n), .c(decrypt_message), .ready(ready_for_decrypt)) ; 
+         exponentiate decryptModule(.reset(reset_decrypt), .clk(clk), .m(m1), .e(d), .n(our_n), .c(decrypt_message), .ready(ready_for_decrypt)) ; 
 
          always_ff @(posedge clk) begin
              if (reset || (address == 3'b000 && instrBits == 1'b1)) begin
@@ -60,7 +61,7 @@
                  functionCall <= 2'b00; 
                  reset_exponent <= 1'b1;
                  reset_decrypt <= 1'b1; 
-
+                 our_n[127:0] <= 128'd0; 
              end
 
              /* reading */
@@ -218,7 +219,15 @@
                              default: begin end
                          endcase
                      end
-
+                        
+                     
+                     32'd13: begin
+                         /* STORE D*/
+                         case (address)
+                             3'b001: our_n[127:0] <= p[63:0] * q[63:0]; 
+                             default: begin end
+                         endcase
+                     end
                      default: begin
                      end
                  endcase
