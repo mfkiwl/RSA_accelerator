@@ -36,7 +36,8 @@ int main()
     int32_t public_n[4] = {0, 0, 1, 0};
     int32_t message[4]  = {0,1,0,0};  
 
-    int32_t *public_e_output = malloc(sizeof(int32_t) * 5);
+    int32_t *p = ((int32_t) generate_prime());
+    int32_t public_e_output[5];
     printf("RSA Box device driver started\n");
 
     /* DECRYPT */ 
@@ -46,6 +47,5 @@ int main()
     for(i = 0; i < 5; i++) {
 	printf("%d\n", public_e_output[i]);  
     }
-    free(public_e_output);
     return 0;
 }
