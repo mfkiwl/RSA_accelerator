@@ -38,7 +38,7 @@
     logic [127:0] d; 
     logic[127:0] decrypt_message; 
     logic ready_for_decrypt; 
-
+	 logic ready_for_read; 
     logic[127:0] our_n;
          //assign reset_exponent = (reset | reset_exponent_signal);
 
@@ -67,7 +67,7 @@
              /* reading */
              if (chipselect && !write) begin
                  case(functionCall)
-                     2'b01: begin
+                     2'b01: begin //encrypt
                          case (address)
                              3'b000: data_out[31:0] <= c[31:0];
                              3'b001: data_out[31:0] <= c[63:32];
@@ -78,7 +78,7 @@
                          endcase
                      end
                      2'b10: begin
-                         case (address)
+                         case (address) //decrypt
                              3'b000: data_out[31:0] <= decrypt_message[31:0];
                              3'b001: data_out[31:0] <= decrypt_message[63:32];
                              3'b010: data_out[31:0] <= decrypt_message[95:64];
@@ -87,8 +87,15 @@
                              default: begin end
                          endcase
                      end
-                     2'b11: begin 
-
+                     2'b11: begin //multiply to read from n or n1 (depending on what's on output bits)
+										case (address)
+                             3'b000: data_out[31:0] <= outputBits[31:0];
+                             3'b001: data_out[31:0] <= outputBits[63:32];
+                             3'b010: data_out[31:0] <= outputBits[95:64];
+                             3'b011: data_out[31:0] <= outputBits[127:96]; 
+                             3'b100: data_out[1] <= ready_for_read; 
+                             default: begin end
+                         endcase
                      end
                      default: begin end
                  endcase
@@ -170,10 +177,11 @@
                      32'd8: begin
                          /* READ_PUBLIC_KEY_1: n */
                          case (address)
-                             3'b001: outputBits[31:0] <= 	n[31:0];
-                             3'b010: outputBits[63:32] <= 	n[63:32];
-                             3'b011: outputBits[95:64] <= 	n[95:64];
-                             3'b100: outputBits[127:96] <=	n[127:96];
+                             3'b001: begin
+												outputBits[127:0] <= 	n[127:0]; 
+												ready_for_read <= 1'b1; 
+												functionCall <= 2'b11; 
+									  end
                              default: begin end
                          endcase
                      end
@@ -228,6 +236,19 @@
                              default: begin end
                          endcase
                      end
+							
+							32'd14: begin
+                         /* READ_PUBLIC_KEY_1: n */
+                         case (address)
+                             3'b001: begin 
+									  outputBits[127:0] <= 	our_n[127:0]; 
+									  ready_for_read <= 1'b1; 
+									  functionCall <= 2'b11; 
+									  end
+                             default: begin end
+                         endcase
+                     end
+							
                      default: begin
                      end
                  endcase
