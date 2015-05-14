@@ -139,44 +139,40 @@ void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
     if (action == ENCRYPT_SEND)
     {
 	send_instruction(STORE_MESSAGE);
-        send_bits(input, 4); // m
-
-        send_instruction(ENCRYPT_BITS);
-        send_bits(input, 4);
-
+        send_bits(input, 4); // cleartext, m
 	__read_encryption(output); 
     }
     
     if (action == DECRYPT_SEND)
     {
-        send_instruction(DECRYPT_BITS);
-        send_bits(input, 4);
+
+	send_instruction(STORE_MESSAGE);
+        send_bits(input, 4); // cleartext, m
+	__read_encryption(output); 
     }
 }
 
 /*
- * Return the public keys on this device.
+ * Return the public keys on this device. Encrypt data already stored
+ * on board.
  *
  * (Note: the interface to read private keys was intentionally ommitted.
  */
 
-void __read_encryption(int32_t *encryption){
-	
+void __read_encryption(int32_t *encryption)
+{
 	int32_t valid[5] = {0,0,0,0,0};
 	int i; 		
 	send_instruction(ENCRYPT_BITS); 
 	send_bits(valid, 2); 
-	while(!valid[4]){
+	while (!valid[4]) {
 		send_instruction(ENCRYPT_BITS); 
 		read_segment(valid, 5); 
 	} 
 
-	read_segment(valid, 5); 
-	
-	//sleep(5); 
-        //read_segment(valid, 5);
+	read_segment(valid, 5);
  	
-        for(i=0; i<4; i++){
+        for(i=0; i<5; i++){
 		encryption[i] = valid[i]; 
 	}
 
