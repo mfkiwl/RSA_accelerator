@@ -43,8 +43,6 @@ void set_fd()
 void send_instruction(int operation)
 {
     rsa_box_arg_t rsa_userspace_vals;
-    int empty[4]; 
-    int i; 
     if (rsa_box_fd == -1)
         set_fd();
 
@@ -52,27 +50,13 @@ void send_instruction(int operation)
     rsa_userspace_vals.data_in = operation;
 
 #ifdef PRINTVERBOSE
-    printf("[instruction] calling %d\n", operation);
+    log_instruction(operation);
 #endif
 
     if (ioctl(rsa_box_fd, RSA_BOX_WRITE_DIGIT, &rsa_userspace_vals))
     {
         perror("ioctl(RSA_BOX_WRITE_DIGIT) failed");
     }
-
-    for(i=0; i<4; i++){
-        empty[i] = operation; 
-    }
-    if(operation == READ_PUBLIC_KEY_1){
-        send_bits(empty, 4); 
-    }
-    if(operation == READ_PUBLIC_KEY_2){
-        send_bits(empty, 1); 
-    }
-    
-   // if (operation == ENCRYPT_BITS){
-//	send_bits(empty, 1); 
-  //  }
 }
 
 /*
@@ -179,9 +163,23 @@ void __read_encryption(int32_t *encryption)
 }
 void __read_public_keys(int32_t *key_1, int32_t *key_2)
 {
+    int i;
+    int empty[4]; 
+    
+    for(i = 0; i < 4; i++) {
+        empty[i] = READ_PUBLIC_KEY_1; 
+    }
+    
     send_instruction(READ_PUBLIC_KEY_1);
+    send_bits(empty, 4); 
     read_segment(key_1, 5);
+    
+    for(i = 0; i < 4; i++) {
+        empty[i] = READ_PUBLIC_KEY_2; 
+    }
+
     send_instruction(READ_PUBLIC_KEY_2);
+    send_bits(empty, 1); 
     read_segment(key_2, 5);
 }
 
