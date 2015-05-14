@@ -2,17 +2,15 @@
 
 module exponentiate( input logic reset, clk,
     input logic[127:0] m,
-    input logic[31:0] e,
+    input logic[127:0] e,
     input logic[127:0] n,
     output logic[127:0] c,
     output logic ready
 ); 
 
-logic[31:0] counter;
 logic[127:0] base;
 logic mult_ready;
 logic square_ready;
-logic[31:0] BIG_E;
 logic fun;
 logic[127:0] squared;
 logic[127:0] product;
@@ -21,7 +19,7 @@ logic square_reset;
 logic new_mult;
 logic new_square;
 logic[127:0] temp;
-logic[31:0] exp;
+logic[127:0] exp;
 
 incrementA multiply(
     .reset      (mult_reset),
@@ -50,10 +48,8 @@ always_ff @(posedge clk)
 begin
     if(reset)
     begin
-        counter <= 32'd0;
-        BIG_E <= 32'd65537;
         ready <= 0;
-        c <= 32'd1;
+        c <= 128'd1;
         base <= m;
         fun <= 1'b0;
         new_mult <= 0;
