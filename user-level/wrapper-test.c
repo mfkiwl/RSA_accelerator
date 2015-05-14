@@ -29,7 +29,7 @@ void print_128_bit_integer(int32_t *input_x)
  * Return 1 if all size 32 bit numbers in the value are 
  * equal; else return 0.
  */
-int large_number_comparison(int32_t *a, int32_t *b, int size)
+int large_numbers_equal(int32_t *a, int32_t *b, int size)
 {
     int i;
     for (i = 0; i < size; i++)
@@ -79,9 +79,10 @@ int main()
     printf("\n[test case: storing and reading public keys...]\n");
     store_keys(PUBLIC, n, e);
     __read_public_keys(n_check, e_check);
-    large_number_comparison(n, n_check, 4);
-    large_number_comparison(e, e_check, 4);
+    if (large_numbers_equal(n, n_check, 4) &&
+         large_numbers_equal(e, e_check, 4))
+    {
+        printf("successfully storing and reading public keys.\n");;    }
     
-
     return 0;
 }
