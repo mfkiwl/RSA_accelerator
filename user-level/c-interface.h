@@ -3,23 +3,17 @@
 
 #include <stdint.h>     /* for unit32_t */
 
-// Start session.
-// Use user-specified private key, return public key.
-void RSA_init(int32_t *p, int32_t *q); 
-
-// Start session. 
-// Use auto-generated private key, return public key.
-//void *RSA_init();
-
-// Save remote public keys to register.
-void set_remote_keys(int32_t *e_other, int32_t *n_other);
+/*
+ * Set private keys to allow encrypting. Set public keys
+ * to allow decrypting.
+ */
+void set_private_keys(int32_t *p, int32_t *q);
+void set_public_keys(int32_t *e, int32_t *n);
+void __read_public_keys(int32_t *e, int32_t *n);
 
 // Encryption and decryption using values stored in registers.
 // Raise exception and set errno if relevant register not set.
-void encrypt(char *msg, char *cypher_buf, int len);
-void decrypt(char *cypher, char *msg_buf, int len);
-
-// End session and clear registers.
-void RSA_end();
+void encrypt(char *msg_buf, int32_t *cypher_buf, int len);
+void decrypt(int32_t *cypher_buf, char *msg_buf, int len);
 
 #endif

@@ -14,41 +14,42 @@
 
 int rsa_box_fd;
 
+// print out 128 bit int, but by [sections]
+void print_128_bit_integer(int32_t *input_x)
+{
+    int i;  
+
+    for (i = 0; i < 4; i++)
+        printf("quartile(%d): %u\n", i, input_x[i]);  
+}
+
 int main()
 {
     /*
      * main tests
      */
 
-    int i; 
-    int32_t input_x_decrypt[12];
-    int32_t input_x_encrypt[5]; 
-    int32_t input_x_n[4]; 
-    int32_t return_x[4]; 
-    
+    // for encryption
+    int32_t public_e[4] = {8, 7, 200, 500};
+    int32_t public_n[4] = {0, 0, 0, 0};
+    int32_t *public_e_output = malloc(sizeof(int32_t) * 4);
+    int32_t public_n_output[4];
     printf("RSA Box device driver started\n");
 
-    // make sure each function can access hardware file descriptor 
-    set_fd();
+    /* DECRYPT */ 
+    printf("\n[test case: storing and reading public keys...]\n\n");
+    store_keys(PUBLIC, public_e, public_n); 
+    __read_public_keys(public_e_output, public_n_output);
     
-    // [setting] message to decrypt
-    for(i = 0; i < 12; i++)
-    	input_x_decrypt[i] = 1; 
-    
+    free(public_e_output);
+    return 0;
+/*
     // [setting] n
     input_x_n[0] = 0;
     input_x_n[1] = 1;
     input_x_n[2] = 0;
     input_x_n[3] = 1;
  
-    // DECRYPT
-    printf("\n[decrypt...]\n\n");
-    intwise_decrypt(input_x_decrypt);
-
-    printf("\n[read result...]\n\n"); 
-    read_segment(return_x);
-    print_128_bit_integer(return_x); 
-    
     // [setting] message to encrypt
     input_x_encrypt[0] = 5; 
     input_x_encrypt[1] = 5; 
@@ -77,7 +78,7 @@ int main()
     printf("\n[read result...]\n\n");
     read_segment(return_x);
     print_128_bit_integer(return_x); 
-
+*/
     printf("\n...done\n");
     return 0;
 }

@@ -12,11 +12,11 @@
    element $${FILENAME}
    {
    }
-   element VGA_LED_NEW_0
+   element RSA_BOX_0
    {
       datum _sortIndex
       {
-         value = "4";
+         value = "3";
          type = "int";
       }
    }
@@ -44,14 +44,6 @@
          type = "int";
       }
    }
-   element vga_led_0
-   {
-      datum _sortIndex
-      {
-         value = "3";
-         type = "int";
-      }
-   }
 }
 ]]></parameter>
  <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
@@ -74,7 +66,6 @@
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
  <interface name="memory" internal="hps_0.memory" type="conduit" dir="end" />
  <interface name="hps_io" internal="hps_0.hps_io" type="conduit" dir="end" />
- <interface name="vga" internal="vga_led_0.conduit_end" />
  <module kind="clock_source" version="13.1" enabled="1" name="clk_0">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -554,11 +545,8 @@
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="AUTO_DEVICE" value="5CSXFC6D6F31C8ES" />
  </module>
- <module kind="vga_led" version="2.0.1" enabled="0" name="vga_led_0">
-  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
- </module>
- <module kind="VGA_LED_NEW" version="2.3" enabled="1" name="VGA_LED_NEW_0">
-  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
+ <module kind="RSA_BOX" version="0.0.2" enabled="1" name="RSA_BOX_0">
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
  </module>
  <connection
    kind="clock"
@@ -581,17 +569,17 @@
    version="13.1"
    start="clk_0.clk_reset"
    end="master_0.clk_reset" />
- <connection kind="clock" version="13.1" start="clk_0.clk" end="vga_led_0.clock" />
+ <connection kind="clock" version="13.1" start="clk_0.clk" end="RSA_BOX_0.clk" />
  <connection
    kind="reset"
    version="13.1"
    start="clk_0.clk_reset"
-   end="vga_led_0.reset_sink" />
+   end="RSA_BOX_0.reset_sink" />
  <connection
    kind="avalon"
    version="13.1"
    start="hps_0.h2f_lw_axi_master"
-   end="vga_led_0.avalon_slave_0">
+   end="RSA_BOX_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
@@ -600,35 +588,7 @@
    kind="avalon"
    version="13.1"
    start="master_0.master"
-   end="vga_led_0.avalon_slave_0">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="clock"
-   version="13.1"
-   start="clk_0.clk"
-   end="VGA_LED_NEW_0.clock" />
- <connection
-   kind="reset"
-   version="13.1"
-   start="clk_0.clk_reset"
-   end="VGA_LED_NEW_0.reset_sink" />
- <connection
-   kind="avalon"
-   version="13.1"
-   start="hps_0.h2f_lw_axi_master"
-   end="VGA_LED_NEW_0.avalon_slave_0">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="13.1"
-   start="master_0.master"
-   end="VGA_LED_NEW_0.avalon_slave_0">
+   end="RSA_BOX_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
