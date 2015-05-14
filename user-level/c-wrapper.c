@@ -165,7 +165,7 @@ void __read_encryption(int32_t *encryption)
 void __read_public_keys(int32_t *key_1, int32_t *key_2)
 {
     send_instruction(READ_PUBLIC_KEY_1);
-    send_bits(empty, 4); 
+    send_bits(empty, 1); 
     read_segment(key_1, 5);
     
     send_instruction(READ_PUBLIC_KEY_2);
