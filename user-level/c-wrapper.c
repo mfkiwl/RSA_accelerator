@@ -116,6 +116,19 @@ void store_keys(int type, int32_t *key_1, int32_t *key_2)
     }
 }
 
+
+void store_d (int32_t *d){
+
+	send_instruction(STORE_D); 
+        send_bits(d, 4);
+}
+
+void send_message2(int32_t *m){
+	
+	send_instruction(STORE_MESSAGE2); 
+	send_bits(m, 4); 
+}
+
 /*
  * Send data to encrypt/decrypt to device.
  */
@@ -131,9 +144,9 @@ void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
     if (action == DECRYPT_SEND)
     {
 
-	send_instruction(STORE_MESSAGE);
-        send_bits(input, 4); // cleartext, m
-	__read_encryption(output); 
+	//send_instruction(STORE_MESSAGE);
+        //send_bits(input, 4); // cleartext, m
+	__read_decryption(output); 
     }
 }
 
@@ -158,10 +171,11 @@ void __read_encryption(int32_t *encryption)
 	int32_t valid[5] = {0,0,0,0,0};
 	int i; 		
 	send_instruction(ENCRYPT_BITS); 
-	send_bits(valid, 2); 
-	while (!valid[4]) {
-		send_instruction(ENCRYPT_BITS); 
-		read_segment(valid, 5); 
+	send_bits(empty, 2); 
+	read_segment(valid, 5); 
+	while (valid[4] == 0) {
+		//send_instruction(ENCRYPT_BITS); 
+		read_segment(valid+4, 1); 
 	} 
 
 	read_segment(valid, 5);
@@ -171,6 +185,27 @@ void __read_encryption(int32_t *encryption)
 	}
 
 }
+
+void __read_decryption(int32_t *decryption)
+{
+	int32_t valid[5] = {0,0,0,0,0};
+	int i; 		
+	send_instruction(DECRYPT_BITS); 
+	send_bits(empty, 2); 
+	read_segment(valid, 5); 
+	while (valid[4] == 0 || valid[4] == 1) {
+		//send_instruction(ENCRYPT_BITS); 
+		read_segment(valid+4, 1); 
+	} 
+
+	read_segment(valid, 5);
+ 	
+        for(i=0; i<5; i++){
+		decryption[i] = valid[i]; 
+	}
+
+}
+
 void __read_public_keys(int32_t *key_1, int32_t *key_2)
 {
     send_instruction(READ_PUBLIC_KEY_1);
