@@ -15,5 +15,7 @@
 #define ENCRYPT_BITS            7
 #define READ_PUBLIC_KEY_1       8 // n
 #define READ_PUBLIC_KEY_2       9 // e
-
+#define STORE_MESSAGE           10 // m
+#define STORE_MESSAGE2           11 // m
+#define STORE_D          12 // m
 #endif

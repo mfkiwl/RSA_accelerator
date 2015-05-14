@@ -30,17 +30,25 @@ int main()
      */
 
     // for encryption
-    int32_t public_e[4] = {8, 7, 200, 500};
-    int32_t public_n[4] = {0, 0, 0, 0};
-    int32_t *public_e_output = malloc(sizeof(int32_t) * 4);
-    int32_t public_n_output[4];
+    int i; 
+    int32_t public_e[4] = {8,0,0,0};
+    int32_t public_n[4] = {0, 0, 1, 0};
+    int32_t message[4]  = {0,1,0,0};  
+
+
+
+    int32_t *public_e_output = malloc(sizeof(int32_t) * 5);
+    int32_t public_n_output[5];
     printf("RSA Box device driver started\n");
 
     /* DECRYPT */ 
     printf("\n[test case: storing and reading public keys...]\n\n");
-    store_keys(PUBLIC, public_e, public_n); 
-    __read_public_keys(public_e_output, public_n_output);
-    
+    store_keys(PUBLIC, public_n, public_e); 
+    //__read_public_keys(public_e_output, public_n_output);
+    send_int_encrypt_decrypt(DECRYPT_SEND, message, public_e_output); 
+    for(i = 0; i < 5; i++) {
+	printf("%d\n", public_e_output[i]);  
+    }
     free(public_e_output);
     return 0;
 /*

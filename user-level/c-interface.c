@@ -34,7 +34,7 @@ void encrypt(char *msg_buf, int32_t *cypher_buf, int len)
     for (i = 0; i < len; i++) 
     {
         memcpy(&curr_val, msg_buf + i, sizeof(int32_t));
-        send_int_encrypt_decrypt(ENCRYPT_SEND, &curr_val);
+       // send_int_encrypt_decrypt(ENCRYPT_SEND, &curr_val);
         read_output(&curr_val + i);
         memcpy(cypher_buf + i, &curr_val, sizeof(char));
     }
@@ -51,7 +51,7 @@ void decrypt(int32_t *cypher_buf, char *msg_buf, int len)
     for (i = 0; i < len; i++) 
     {
         memcpy(&curr_val, cypher_buf + i, sizeof(int32_t));
-        send_int_encrypt_decrypt(DECRYPT_SEND, &curr_val);
+       // send_int_encrypt_decrypt(DECRYPT_SEND, &curr_val);
         read_output(&curr_val);
         memcpy(msg_buf + i, &curr_val, sizeof(char));
     }
