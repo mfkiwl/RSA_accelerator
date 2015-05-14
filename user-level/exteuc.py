@@ -38,17 +38,19 @@ def main():
 
     e = int(sys.argv[1])
 
-    phi = int(sys.argv[4])
+    phi = int(sys.argv[5])
     
-    add1 = int(sys.argv[3]) << 32
-    add2 = int(sys.argv[2]) << 64
+    add1 = int(sys.argv[4]) << 32
+    add2 = int(sys.argv[3]) << 64
+    add3 = int(sys.argv[2]) << 96
     
     phi += add1
     phi += add2
+    phi += add3
 
     # test values: e = 2; phi = 2**33 + 5
 
     d = inverse(e, phi)
-    print str(d), "\0"
+    print str(bin(d)) + " " + str(d), "\0"
 	
 main()

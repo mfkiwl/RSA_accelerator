@@ -12,6 +12,8 @@
 #include "c-wrapper.h"
 #include "instructions.h"
 
+#include "prime-generator.h"
+
 int rsa_box_fd;
 
 // print out 128 bit int, but by [sections]
@@ -29,7 +31,10 @@ int main()
      * main tests
      */
 
-    // for encryption
+    // generate p & q
+    uint64_t p = generate_prime();
+    uint64_t q = generate_prime();
+
     int32_t public_e[4] = {8, 7, 200, 500};
     int32_t public_n[4] = {0, 0, 0, 0};
     int32_t *public_e_output = malloc(sizeof(int32_t) * 4);

@@ -5,7 +5,7 @@
 #include <string.h>    
 #include <unistd.h>    
 
-#define RCVBUFSIZE 32   /* size of receive buffer */
+#define RCVBUFSIZE 256   /* size of receive buffer */
 
 /* error handling */
 void err_sys(char *errorMessage) {
@@ -13,68 +13,72 @@ void err_sys(char *errorMessage) {
     exit(1);
 }
 
-int main(int argc, char *argv[])
-{
-    int sock;                           /* socket descriptor */
-    struct sockaddr_in servAddr;        /* server address */
-    unsigned short servPort;            /* server port */
-    char *servIP;                       /* server IP address (dotted quad) */
-    
-    char *msgString;                    /* msg string to send to server */
-    char msgBuffer[RCVBUFSIZE];         /* buffer for msg string */
-    unsigned int msgStringLen;      
-    
-    int bytesRcvd, totalBytesRcvd;      /* bytes read in single recv() and total bytes read */
-
-    if ((argc < 3) || (argc > 4))       /* test for correct number of arguments */
-    {
-       fprintf(stderr, "usage: %s <server IP> <word> [<port>]\n",
-               argv[0]);
-       exit(1);
-    }
-
-    servIP = argv[1];               /* first arg: server IP address (dotted quad) */
-    msgString = argv[2];            /* second arg: string to echo */
-
-    if (argc == 4)
-        servPort = atoi(argv[3]);   /* use given port, if any */
-    else
-        servPort = 7;               /* default */
+int create_socket(char *servIP, unsigned short servPort, 
+    struct sockaddr_in *servAddr) {
 
     /* SOCKET */
+    int sock;
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
         err_sys("socket() failed");
 
-    /* construct the server address structure */
-    memset(&servAddr, 0, sizeof(servAddr));     
-    servAddr.sin_family      = AF_INET;             
-    servAddr.sin_addr.s_addr = inet_addr(servIP);   
-    servAddr.sin_port        = htons(servPort); 
+    /* construct  structure */
+    memset(servAddr, 0, sizeof(*servAddr));     
+    servAddr->sin_family      = AF_INET;             
+    servAddr->sin_addr.s_addr = inet_addr(servIP);   
+    servAddr->sin_port        = htons(servPort); 
 
     /* CONNECT */
-    if (connect(sock, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0)
+    if (connect(sock, (struct sockaddr *) servAddr, sizeof(*servAddr)) < 0)
         err_sys("connect() failed");
 
-    msgStringLen = strlen(msgString);          /* Determine input length */
+    return sock;
+}
 
-    /* SEND */
-    if (send(sock, msgString, msgStringLen, 0) != msgStringLen)
-        err_sys("send() sent a different number of bytes than expected");
+int main(int argc, char *argv[])
+{
+    int sock;                           
+    struct sockaddr_in servAddr;        
+    unsigned short servPort;            
+    char *servIP;                       
+    
+    char msgString[RCVBUFSIZE];                    
+    char msgBuffer[RCVBUFSIZE];         
+    unsigned int msgStringLen;      
+    
+    int bytesRcvd;      
 
-    /* RECEIVE */
-    totalBytesRcvd = 0;
-    printf("received: ");                /* Setup to print the echoed string */
-    while (totalBytesRcvd < msgStringLen)
-    {
-        /* RECEIVE */
-        if ((bytesRcvd = recv(sock, msgBuffer, RCVBUFSIZE - 1, 0)) <= 0)
-            err_sys("recv() failed or connection closed prematurely");
-        totalBytesRcvd += bytesRcvd;   /* total bytes */
-        msgBuffer[bytesRcvd] = '\0';  
-        printf("%s", msgBuffer);      /* print buffer */
+    if (argc != 3) {
+       fprintf(stderr, "usage: %s <server IP> <port>\n", argv[0]);
+       exit(1);
     }
 
-    printf("\n");   
+    servIP = argv[1];               
+    servPort = atoi(argv[2]);    
+
+    sock = create_socket(servIP, servPort, &servAddr);              
+
+    /* PROMPT for input */
+    printf(">> "); scanf("%256s", msgString);
+    msgStringLen = strlen(msgString);
+
+    do {
+
+        /* SEND */
+        if (send(sock, msgString, msgStringLen, 0) != msgStringLen)
+            err_sys("send() failed");
+
+        /* RECEIVE */
+        printf("<server>: ");                
+
+        bytesRcvd = recv(sock, msgBuffer, RCVBUFSIZE - 1, 0); msgBuffer[bytesRcvd] = '\0';  
+        
+        printf("%s\n", msgBuffer);      /* print buffer */
+
+        /* PROMPT for input */
+        printf(">> "); scanf("%255s", msgString); msgString[RCVBUFSIZE - 1] = '\0';
+        msgStringLen = strlen(msgString);
+
+    } while(msgStringLen > 0);
 
     close(sock);
     exit(0);
