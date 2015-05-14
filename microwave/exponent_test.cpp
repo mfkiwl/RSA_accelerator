@@ -2,7 +2,7 @@
 #include "Vexponentiate.h"
 #include <iostream>
 #include "verilated_vcd_c.h"
-#define MAXTIME 300000
+#define MAXTIME 24000
 
 using namespace std; 
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv, char **env){
 //    int ans = ( (a*b)%n );  
     top->clk = 0; 
     top->m[0] = m; 
-    top->e = e; 
+    top->e = ; 
     top->n[0] = n; 
 
     while(!Verilated::gotFinish()){    

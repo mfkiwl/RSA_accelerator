@@ -65,7 +65,8 @@ begin
             1'b0: begin
                 new_mult <= 1;
                 new_square <= 1;
-                fun <= 1'b1;
+                if(!mult_ready & !square_ready)
+                    fun <= 1'b1;
             end
             1'b1: begin
                 new_mult <= 0;
