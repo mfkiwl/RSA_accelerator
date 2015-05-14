@@ -1,7 +1,14 @@
 /* verilator lint_off UNUSED */
 /* verilator lint_off WIDTH */
 /* verilator lint_off UNSIGNED */
-module incrementA(input logic reset, input logic clk, input logic[127:0] a, input logic[127:0] b, input logic [127:0] n, output logic[127:0] r, output logic ready, output logic[127:0] outputAnswer);
+module incrementA(input logic reset, 
+    input logic clk, 
+    input logic[127:0] a, 
+    input logic[127:0] b, 
+    input logic[127:0] n, 
+    output logic ready, 
+    output logic[127:0] outputAnswer
+);
 
 logic[8:0] counter; 
 
@@ -15,6 +22,7 @@ logic[127:0] not_a_and_two_n;
 logic[127:0] twoN; 
 logic fun; 
 
+logic[127:0] r;
 logic[127:0] twoR; 
 logic[127:0] b_minus_n; 
 logic[127:0] b_minus_two_n; 
@@ -25,6 +33,7 @@ always_ff @(posedge clk)
 begin
     if(reset)
     begin
+        ready <= 0;
         counter[8:0] <= 9'd128;
 
         r[127:0] <= 6'd0; 

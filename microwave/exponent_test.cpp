@@ -50,14 +50,14 @@ int main(int argc, char **argv, char **env){
     //initialize reset to true, as well as pass in a and b values
     top->reset = 1;
 
-    m = 15337;
-    e = 27723; 
-    n = 18782; 
+    m = 1;
+    e = 1; 
+    n = 1; 
 //    int ans = ( (a*b)%n );  
     top->clk = 0; 
-    top->m[0] = m; 
-    top->e[0] = e; 
-    top->n[0] = n; 
+    top->m[3] = m; 
+    top->e[3] = e; 
+    top->n[3] = n; 
 
     while(!Verilated::gotFinish()){    
         tfp->dump(main_time);
