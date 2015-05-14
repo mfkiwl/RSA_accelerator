@@ -138,6 +138,15 @@ void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
 }
 
 /*
+void read_our_public_key(int32_t *our_key)
+{
+    send_instruction(MAKE_OUR_N);
+    send_bits(empty, 1);
+    read_segment(our_key, 4);
+}
+*/
+
+/*
  * Return the public keys on this device. Encrypt data already stored
  * on board.
  *

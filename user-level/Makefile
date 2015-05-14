@@ -1,10 +1,10 @@
 CFLAGS = -g -Wall $(INCLUDES)
 
-default: interface-test wrapper-test
+default: wrapper-test
 debug: prime-generator exteuc
 
 interface-test: c-interface.o c-wrapper.o instructions.o
-wrapper-test: c-wrapper.o instructions.o #prime-generator.o
+wrapper-test: c-wrapper.o instructions.o
 
 # prime-generator & exteuc used for testing
 prime-generator: prime-generator.o

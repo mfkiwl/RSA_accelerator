@@ -43,12 +43,11 @@ int main()
     /*
      * main tests
      */
-    
     int32_t p[2];
     int32_t q[2];
 
-    int32_t e[1] = {8};
-    int32_t n[4] = {0, 0, 1, 0};
+    int32_t e[1] = {13};
+    int32_t n[4];
     int32_t e_check[4];
     int32_t n_check[4];
 
@@ -67,6 +66,10 @@ int main()
     // need to be able to get back n to send to other client
 
     /* DECRYPT */ 
+    read_our_public_key(n);
+    print_128_bit_integer(n);
+   
+    return 0; 
 /*
     printf("\n[test case: storing and reading public keys...]\n");
     send_int_encrypt_decrypt(DECRYPT_SEND, message, public_e_output); 
