@@ -17,5 +17,6 @@ void __read_encryption(int32_t *encryption);
 
 void set_fd();
 void print_128_bit_integer(int32_t *input_x);
+void read_our_N(int32_t *n);
 
 #endif
