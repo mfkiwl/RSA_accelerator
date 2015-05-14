@@ -4,6 +4,6 @@
 #include <stdint.h>     /* for unit32_t */
 
 void err_sys(char *err);
-void e_euclid(int e, int phi1 , int phi2, int phi3);
+void e_euclid(int e, int phi[4]);
 
 #endif

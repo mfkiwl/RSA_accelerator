@@ -6,17 +6,21 @@
 
 #define READ_BUF 4096
 
+struct IntSet {
+	int x[4];
+};
+
 void err_sys(char *err) {
 	perror(err);
 	exit(1);
 }
 
-void e_euclid(int e, int *phi, int *d) {
-	
+struct IntSet e_euclid(int e, int phi[4]) {
+
 	int phi1 = phi[0];
-	int phi1 = phi[0];
-	int phi1 = phi[0];
-	int phi1 = phi[0];
+	int phi2 = phi[1];
+	int phi3 = phi[2];
+	int phi4 = phi[3];
 
 	pid_t pid;
 	int fd[2];
@@ -42,12 +46,26 @@ void e_euclid(int e, int *phi, int *d) {
 			err_sys("read error");
 		}
 
-		printf("[received]: %s\n", buf);
+		// printf("[received]: %s\n", buf);
+
+		struct IntSet my_s;
+
+		/* parse buf */
+		const char s[2] = " ";
+		char *token = strtok(buf, s);
+		int curr = 0;
+
+		while(token != NULL && curr < 4) {
+			my_s.x[curr] = atoi(token);
+			printf("curr: %d, token: %s\n", curr, token);
+			token = strtok(NULL, s);
+			curr++;
+		}
 
 		if (waitpid(pid, NULL, 0) < 0)
             err_sys("waitpid error");
         
-        exit(0);
+        return my_s;
 	} 
 	else { // child
 		close(fd[0]); // close read end
@@ -75,10 +93,17 @@ void e_euclid(int e, int *phi, int *d) {
 		// execute Python script
 		execlp("python", "python", "exteuc.py", e_s, phi_s, phi2_s, phi3_s, phi4_s, (char *)NULL);
 	}
+	exit(1);
+	struct IntSet s_val;
+	return s_val;
 }
 
 int main() {
 
-	e_euclid(2, 0, 0, 2, 5);
+	int phi[4] = {0, 0, 2, 5};
+	struct IntSet s;
+	s = e_euclid(2, phi);
+
+	printf("d: %d\n", s.x[3]);
 	return 0;
 }
