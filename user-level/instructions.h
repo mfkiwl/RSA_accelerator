@@ -18,8 +18,8 @@
 #define STORE_MESSAGE           10 // m
 #define STORE_MESSAGE2          11 // m
 #define STORE_D                 12 // m
-
-#define READ_OUR_N              14 // p * q 
+#define MAKE_OUR_N              13 // carry out p * q op
+#define READ_OUR_N              14 // read back (p * q) 
 
 void log_instruction(int opcode);
 

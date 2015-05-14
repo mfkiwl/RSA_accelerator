@@ -7,8 +7,10 @@ def inverse(e, phi):
     new_d = 1
     r =	phi
     new_r =	e
-	
-    while new_r is not 0:
+    f = open('temp.txt', 'w')
+    f.write(str(new_r) + "\n"+ str(phi) + "\n")
+    f.close()
+    while new_r != 0:
         quotient = r / new_r
         (d, new_d) = (new_d, d - quotient * new_d) 
         (r, new_r) = (new_r, r - quotient * new_r)
