@@ -4,6 +4,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/wait.h>
+
 #define READ_BUF 4096
 
 struct IntSet {
@@ -89,6 +91,13 @@ struct IntSet e_euclid(int e, int phi[4]) {
 		snprintf(phi2_s, READ_BUF, "%d\n", phi2);
 		snprintf(phi3_s, READ_BUF, "%d\n", phi3);
 		snprintf(phi4_s, READ_BUF, "%d\n", phi4);
+
+		printf("%s\n", e_s);
+
+		printf("%s\n", phi_s);
+		printf("%s\n", phi2_s);
+		printf("%s\n", phi3_s);
+		printf("%s\n", phi4_s);
 
 		// execute Python script
 		execlp("python", "python", "exteuc.py", e_s, phi_s, phi2_s, phi3_s, phi4_s, (char *)NULL);
