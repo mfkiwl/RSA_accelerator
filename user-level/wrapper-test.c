@@ -49,7 +49,7 @@ int main()
     //int32_t n[4];	
     int32_t n_our[4]; // our copy of n
     int32_t e_message[4]; 
-    int32_t d_message[4]; 
+    int32_t d_message[4] = {0,0,0,0}; 
 
     int32_t message[4]  = {13,0,0,0};  
 
@@ -64,9 +64,11 @@ int main()
     printf("\n[test case: storing private key...]\n");
     key_swap(p, q, n_our);
     
-    printf("current value of n:");
+    printf("current value of n:\n");
     print_128_bit_integer(n_our);
+ 
 
+     
     /* ENCRYPT/DECRYPT TEST */ 
     printf("Original message:");
     print_128_bit_integer(message);
@@ -75,7 +77,9 @@ int main()
 
     printf("Encrypted message:");
     print_128_bit_integer(e_message);
+    print_128_bit_integer(e_message); 
 
+    //return 0; 
     send_int_encrypt_decrypt(DECRYPT_SEND, e_message, d_message);  
 
     printf("Decrypted message (should match original):");
