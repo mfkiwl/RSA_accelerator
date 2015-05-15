@@ -101,6 +101,7 @@ void key_swap(int32_t *p, int32_t *q, int32_t *our_n)
     int32_t p_phi[2];
     int32_t q_phi[2];
     int32_t phi_n[4];
+    int32_t e[1]; 
     int32_t d[4];
 
     // calculate p - 1, q - 1
@@ -114,13 +115,16 @@ void key_swap(int32_t *p, int32_t *q, int32_t *our_n)
     store_keys(PRIVATE, p_phi, q_phi);
     read_our_N(phi_n);
 
-    int32_t E = 65537;
+    int32_t E = 3;
     e_euclid(E, phi_n, d);
     __store_d(d);
 
     // store actual p and q
     store_keys(PRIVATE, p, q);
     read_our_N(our_n);
+
+    e[0] = 3; 
+    store_keys(PUBLIC, our_n, e);
 }
 
 /*
@@ -219,9 +223,9 @@ void __read_decryption(int32_t *decryption)
 
     while (valid[4] == 0 || valid[4] == 1) 
     {
-        read_segment(valid + 4, 1); 
+        read_segment(valid, 5); 
     } 
-
+    //sleep(2); 
     read_segment(valid, 5);
 
     for (i = 0; i < 5; i++)
