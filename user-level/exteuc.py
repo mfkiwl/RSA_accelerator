@@ -1,19 +1,16 @@
 import sys
 
-def inverse(e, phi):
-    '''Extended Euclidean Algorithm'''
+def extended_euclids(e, phi):
 
     d =	0
-    new_d = 1
+    updated_d = 1
     r =	phi
-    new_r =	e
-    f = open('temp.txt', 'w')
-    f.write(str(new_r) + "\n"+ str(phi) + "\n")
-    f.close()
-    while new_r != 0:
-        quotient = r / new_r
-        (d, new_d) = (new_d, d - quotient * new_d) 
-        (r, new_r) = (new_r, r - quotient * new_r)
+    updated_r = e
+    
+    while updated_r != 0:
+        quotient = r / updated_r
+        (d, updated_d) = (updated_d, d - quotient * updated_d) 
+        (r, updated_r) = (updated_r, r - quotient * updated_r)
 		
     if r > 1:
 		return -1 # error
@@ -22,14 +19,6 @@ def inverse(e, phi):
         d = d + phi
     
     return d
-
-def print_test(test_no, phi, e, d):
-    '''verifies the computation of Extended Euclid's'''
-    # to test... print_test(1, 15, 2, 8) or print_test(2, 21, 2, 11)
-
-    print "[test %d]: phi: %d, e: %d" % (test_no, phi, e)
-    print " - desired: %d" % d
-    print " - result: %d" % (inverse(e, phi)) 
 
 def main():
 
@@ -52,7 +41,7 @@ def main():
 
     # test values: e = 2; phi = 2**33 + 5
 
-    d = inverse(e, phi)
+    d = extended_euclids(e, phi)
     # print str(bin(d)) + " " + str(d), "\0"
 
     d_list = format(d, '#0130b')
