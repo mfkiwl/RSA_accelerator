@@ -152,7 +152,10 @@ void store_d(int32_t *d)
     send_bits(d, 4);
 }
 
-void send_message2(int32_t *m)
+/*
+ * Writes input to m2, the cyphertext to be decrypted.
+ */
+void send_cyphertext(int32_t *m)
 {	
     send_instruction(STORE_MESSAGE2); 
     send_bits(m, 4); 
@@ -172,10 +175,8 @@ void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
     
     if (action == DECRYPT_SEND)
     {
-
-	//send_instruction(STORE_MESSAGE);
-        //send_bits(input, 4); // cleartext, m
-	__read_decryption(output); 
+        send_cyphertext(input);
+        __read_decryption(output); 
     }
 }
 

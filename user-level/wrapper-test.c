@@ -54,7 +54,6 @@ int main()
     int32_t n_check[4];
     int32_t e_message[4]; 
     int32_t d_message[4]; 
-    int32_t extended_e; 
 
     int32_t d_n[4];  
     int32_t message[4]  = {13,0,0,0};  
@@ -113,7 +112,7 @@ int main()
     print_128_bit_integer(e_message);
     store_d(d_n); 
 
-    send_message2(e_message); 
+    send_cyphertext(e_message); 
     
 
     send_int_encrypt_decrypt(DECRYPT_SEND, e_message, d_message);  
