@@ -22,7 +22,7 @@
 
 void read_segment(int32_t *bit_output, int size);
 void send_bits(int32_t *value, int count); 
-
+void __store_d(int32_t *d); 
 
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
@@ -71,7 +71,7 @@ void send_bits(int32_t *value, int count)
 {
     rsa_box_arg_t rsa_userspace_vals;
     int i;
-    
+
     if (rsa_box_fd == -1)
         set_fd();
 
@@ -115,7 +115,7 @@ void key_swap(int32_t *p, int32_t *q, int32_t *our_n)
 
     int32_t E = 65537;
     e_euclid(E, phi_n, d);
-    store_d(d);
+    __store_d(d);
 
     // store actual p and q
     store_keys(PRIVATE, p, q);
@@ -135,18 +135,18 @@ void store_keys(int type, int32_t *key_1, int32_t *key_2)
         send_instruction(STORE_PRIVATE_KEY_2);
         send_bits(key_2, 2); // q
     }
-    
+
     if (type == PUBLIC)
     {
         send_instruction(STORE_PUBLIC_KEY_1);
         send_bits(key_1, 4); // n 
-	send_instruction(STORE_PUBLIC_KEY_2);
+        send_instruction(STORE_PUBLIC_KEY_2);
         send_bits(key_2, 1); // e
     }
 }
 
 
-void store_d(int32_t *d) 
+void __store_d(int32_t *d) 
 {
     send_instruction(STORE_D); 
     send_bits(d, 4);
@@ -155,7 +155,7 @@ void store_d(int32_t *d)
 /*
  * Writes input to m2, the cyphertext to be decrypted.
  */
-void send_cyphertext(int32_t *m)
+void __send_cyphertext(int32_t *m)
 {	
     send_instruction(STORE_MESSAGE2); 
     send_bits(m, 4); 
@@ -168,14 +168,14 @@ void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
 {
     if (action == ENCRYPT_SEND)
     {
-	send_instruction(STORE_MESSAGE);
+        send_instruction(STORE_MESSAGE);
         send_bits(input, 4); // cleartext, m
-	__read_encryption(output); 
+        __read_encryption(output); 
     }
-    
+
     if (action == DECRYPT_SEND)
     {
-        send_cyphertext(input);
+        __send_cyphertext(input);
         __read_decryption(output); 
     }
 }
@@ -188,58 +188,51 @@ void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
  */
 void __read_encryption(int32_t *encryption)
 {
-	int32_t valid[5] = {0,0,0,0,0};
-	int i; 		
-	send_instruction(ENCRYPT_BITS); 
-	send_bits(empty, 2); 
-	read_segment(valid, 5); 
-	while (valid[4] == 0) {
-		//send_instruction(ENCRYPT_BITS); 
-		read_segment(valid+4, 1); 
-	} 
+    int32_t valid[5] = {0,0,0,0,0};
+    int i; 		
+    send_instruction(ENCRYPT_BITS); 
+    send_bits(empty, 2); 
+    read_segment(valid, 5); 
 
-	read_segment(valid, 5);
- 	
-        for(i = 0; i < 5; i++)
-        {
-		encryption[i] = valid[i]; 
-	}
+    while (valid[4] == 0)
+    {
+        read_segment(valid+4, 1); 
+    } 
+
+    read_segment(valid, 5);
+
+    for (i = 0; i < 5; i++)
+    {
+        encryption[i] = valid[i]; 
+    }
 }
 
 void __read_decryption(int32_t *decryption)
 {
-	int32_t valid[5] = {0, 0, 0, 0, 0};
-	int i;
+    int32_t valid[5] = {0, 0, 0, 0, 0};
+    int i;
 
-	send_instruction(DECRYPT_BITS); 
-	send_bits(empty, 2); 
-	read_segment(valid, 5); 
+    send_instruction(DECRYPT_BITS); 
+    send_bits(empty, 2); 
+    read_segment(valid, 5); 
 
-	while (valid[4] == 0 || valid[4] == 1) 
-        {
-		read_segment(valid + 4, 1); 
-	} 
+    while (valid[4] == 0 || valid[4] == 1) 
+    {
+        read_segment(valid + 4, 1); 
+    } 
 
-	read_segment(valid, 5);
- 	
-        for (i = 0; i < 5; i++)
-        {
-		decryption[i] = valid[i]; 
-	}
+    read_segment(valid, 5);
+
+    for (i = 0; i < 5; i++)
+    {
+        decryption[i] = valid[i]; 
+    }
 
 }
 
-void __read_public_keys(int32_t *key_1, int32_t *key_2)
-{
-    send_instruction(READ_PUBLIC_KEY_1);
-    send_bits(empty, 1); 
-    read_segment(key_1, 5);
-    
-    send_instruction(READ_PUBLIC_KEY_2);
-    send_bits(empty, 1); 
-    read_segment(key_2, 1);
-}
-
+/*
+ * Read "size" 32 bit segments into bit output.
+ */ 
 void read_segment(int32_t *bit_output, int size)
 {
     rsa_box_arg_t rsa_userspace_vals;
@@ -271,19 +264,13 @@ void read_our_N(int32_t *n)
 {
     send_instruction(MAKE_OUR_N);
     send_bits(empty, 1); 
-    
+
     send_instruction(READ_OUR_N); 
     send_bits(empty, 1); 
     read_segment(n, 4);
 }
 
-/* 
- * Read 128 bits from hardware output into into [bit_output]. 
- */
-void read_output(int32_t *bit_output)
-{
-    read_segment(bit_output, 4);
-}
+/** Extended Euclid's implementation below **/
 
 #include <string.h>
 #include <sys/wait.h>
@@ -291,101 +278,101 @@ void read_output(int32_t *bit_output)
 #define READ_BUF 4096
 
 struct IntSet {
-	int x[4];
+    int x[4];
 };
 
 void err_sys(char *err) {
-	perror(err);
-	exit(1);
+    perror(err);
+    exit(1);
 }
 
 void e_euclid(int32_t e, int32_t phi[4], int32_t *d) 
 {
-	int phi1 = phi[3];
-	int phi2 = phi[2];
-	int phi3 = phi[1];
-	int phi4 = phi[0];
+    int phi1 = phi[3];
+    int phi2 = phi[2];
+    int phi3 = phi[1];
+    int phi4 = phi[0];
 
-	pid_t pid;
-	int fd[2];
+    pid_t pid;
+    int fd[2];
 
-	if(pipe(fd) < 0) {
-		err_sys("pipe error");
-	}
+    if(pipe(fd) < 0) {
+        err_sys("pipe error");
+    }
 
-	if((pid = fork()) < 0) {
-		err_sys("fork error");
-	} 
-	else if(pid > 0) { // parent
-		close(fd[1]); // close write end
+    if((pid = fork()) < 0) {
+        err_sys("fork error");
+    } 
+    else if(pid > 0) { // parent
+        close(fd[1]); // close write end
 
-		if(fd[0] != STDIN_FILENO) { // set STDIN
-			if(dup2(fd[0], STDIN_FILENO) != STDIN_FILENO) {
-				err_sys("dup2 error");
-			}
-		}
+        if(fd[0] != STDIN_FILENO) { // set STDIN
+            if(dup2(fd[0], STDIN_FILENO) != STDIN_FILENO) {
+                err_sys("dup2 error");
+            }
+        }
 
-		char buf[READ_BUF];
-		if(read(STDIN_FILENO, buf, READ_BUF) < 0) {
-			err_sys("read error");
-		}
+        char buf[READ_BUF];
+        if(read(STDIN_FILENO, buf, READ_BUF) < 0) {
+            err_sys("read error");
+        }
 
-		// printf("[received]: %s\n", buf);
+        // printf("[received]: %s\n", buf);
 
-		struct IntSet my_s;
+        struct IntSet my_s;
 
-		/* parse buf */
-		const char s[2] = " ";
-		char *token = strtok(buf, s);
-		int curr = 0;
+        /* parse buf */
+        const char s[2] = " ";
+        char *token = strtok(buf, s);
+        int curr = 0;
 
-		while(token != NULL && curr < 4) {
-			my_s.x[curr] = atoi(token);
-			printf("curr: %d, token: %s\n", curr, token);
-			token = strtok(NULL, s);
-			curr++;
-		}
+        while(token != NULL && curr < 4) {
+            my_s.x[curr] = atoi(token);
+            printf("curr: %d, token: %s\n", curr, token);
+            token = strtok(NULL, s);
+            curr++;
+        }
 
-		if (waitpid(pid, NULL, 0) < 0)
+        if (waitpid(pid, NULL, 0) < 0)
             err_sys("waitpid error");
-	
+
         d[0] = my_s.x[3]; 
         d[1] = my_s.x[2];
         d[2] = my_s.x[1];
         d[3] = my_s.x[0];
-} 
-	else { // child
-		close(fd[0]); // close read end
+    } 
+    else { // child
+        close(fd[0]); // close read end
 
-		if(fd[1] != STDOUT_FILENO) { // set STDOUT
-			if(dup2(fd[1], STDOUT_FILENO) != STDOUT_FILENO) {
-				err_sys("dup2 error");
-			}
-		}
+        if(fd[1] != STDOUT_FILENO) { // set STDOUT
+            if(dup2(fd[1], STDOUT_FILENO) != STDOUT_FILENO) {
+                err_sys("dup2 error");
+            }
+        }
 
-		char e_s[READ_BUF]; 
+        char e_s[READ_BUF]; 
 
-		char phi_s[READ_BUF];
-		char phi2_s[READ_BUF]; 
-		char phi3_s[READ_BUF];
-		char phi4_s[READ_BUF];
-		
-		snprintf(e_s, READ_BUF, "%d\n", e);
+        char phi_s[READ_BUF];
+        char phi2_s[READ_BUF]; 
+        char phi3_s[READ_BUF];
+        char phi4_s[READ_BUF];
 
-		snprintf(phi_s, READ_BUF, "%d\n", phi1);
-		snprintf(phi2_s, READ_BUF, "%d\n", phi2);
-		snprintf(phi3_s, READ_BUF, "%d\n", phi3);
-		snprintf(phi4_s, READ_BUF, "%d\n", phi4);
+        snprintf(e_s, READ_BUF, "%d\n", e);
 
-		printf("%s\n", e_s);
+        snprintf(phi_s, READ_BUF, "%d\n", phi1);
+        snprintf(phi2_s, READ_BUF, "%d\n", phi2);
+        snprintf(phi3_s, READ_BUF, "%d\n", phi3);
+        snprintf(phi4_s, READ_BUF, "%d\n", phi4);
 
-		printf("%s\n", phi_s);
-		printf("%s\n", phi2_s);
-		printf("%s\n", phi3_s);
-		printf("%s\n", phi4_s);
+        printf("%s\n", e_s);
 
-		// execute Python script
-		execlp("python", "python", "exteuc.py", e_s, phi_s, phi2_s, phi3_s, phi4_s, (char *)NULL);
-	}
+        printf("%s\n", phi_s);
+        printf("%s\n", phi2_s);
+        printf("%s\n", phi3_s);
+        printf("%s\n", phi4_s);
+
+        // execute Python script
+        execlp("python", "python", "exteuc.py", e_s, phi_s, phi2_s, phi3_s, phi4_s, (char *)NULL);
+    }
 }
 
