@@ -1,30 +1,25 @@
 ## RSA Box
 
-For the hardware, the updated code is in the same repo as the C code, which is:
-
-```
-/sockit/lab3-enp2111/root/root/RSAB
-```
-
-From the FPGA, run:
+From the root on the FPGA, run:
 ```
 make
 ``` 
+This generates the device driver (kernel module). Then, if you run:
 
-To start up the device driver, run:
 ```
-insmod rsa_box.ko
-```
-
-With the driver running, run `./hello` in order to demonstrate RSA capabilities.
-
-To finish your session, run:
-```
-rmmod vga_led
+cd user-level
+make
 ```
 
-### Dependencies:
- * [GMP](https://gmplib.org/)
+You can run:
+```
+./run.sh
+```
+
+This inserts the kernel module and runs the test cases defined in wrapper-test.c.
+
+### Important Source Code (in PDF)
+lab3-qsys/RSA_BOX.sv is our primary hardware file. Everything in user-level is also very important, as are rsa_box.c and rsa_box.h in the root, which define the device driver.
 
 ### Updating the Linux device tree on FPGA:
 * from [device_tree_files](https://github.com/ohEmily/RSA_accelerator/tree/master/device_tree_files), run:
