@@ -181,15 +181,6 @@ void send_int_encrypt_decrypt(int action, int32_t *input, int32_t *output)
 }
 
 /*
-void read_our_public_key(int32_t *our_key)
-{
-    send_instruction(MAKE_OUR_N);
-    send_bits(empty, 1);
-    read_segment(our_key, 4);
-}
-*/
-
-/*
  * Return the public keys on this device. Encrypt data already stored
  * on board.
  *
@@ -209,27 +200,30 @@ void __read_encryption(int32_t *encryption)
 
 	read_segment(valid, 5);
  	
-        for(i=0; i<5; i++){
+        for(i = 0; i < 5; i++)
+        {
 		encryption[i] = valid[i]; 
 	}
-
 }
 
 void __read_decryption(int32_t *decryption)
 {
-	int32_t valid[5] = {0,0,0,0,0};
-	int i; 		
+	int32_t valid[5] = {0, 0, 0, 0, 0};
+	int i;
+
 	send_instruction(DECRYPT_BITS); 
 	send_bits(empty, 2); 
 	read_segment(valid, 5); 
-	while (valid[4] == 0 || valid[4] == 1) {
-		//send_instruction(ENCRYPT_BITS); 
-		read_segment(valid+4, 1); 
+
+	while (valid[4] == 0 || valid[4] == 1) 
+        {
+		read_segment(valid + 4, 1); 
 	} 
 
 	read_segment(valid, 5);
  	
-        for(i=0; i<5; i++){
+        for (i = 0; i < 5; i++)
+        {
 		decryption[i] = valid[i]; 
 	}
 
@@ -291,13 +285,7 @@ void read_output(int32_t *bit_output)
     read_segment(bit_output, 4);
 }
 
-
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <string.h>
-#include <unistd.h>
-
 #include <sys/wait.h>
 
 #define READ_BUF 4096
