@@ -21,5 +21,6 @@ void set_fd();
 void print_128_bit_integer(int32_t *input_x);
 void read_our_N(int32_t *n);
 void __read_decryption(int32_t *decryption); 
+void key_swap(int32_t *p, int32_t *q, int32_t *our_n);
 
 #endif
