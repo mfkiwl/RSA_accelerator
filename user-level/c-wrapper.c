@@ -23,6 +23,7 @@
 void read_segment(int32_t *bit_output, int size);
 void send_bits(int32_t *value, int count); 
 void __store_d(int32_t *d); 
+void store_keys(int type, int32_t *key_1, int32_t *key_2);
 
 /* globals */
 static int BIT_SEGMENTS[5] =  {1, 2, 3, 4, 5}; 
